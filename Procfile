@@ -1,1 +1,2 @@
-web : python manage.py migrate && gunicorn san_andres.wsgi
+
+web: gunicorn san_andres.wsgi --log-file - 
