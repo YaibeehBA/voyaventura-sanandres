@@ -89,37 +89,36 @@
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-white-50 py-4 px-sm-3 px-lg-5" style="margin-top: 90px;">
         <div class="row">
-            <div class="col-lg-3 col-md-6 mb-4">
+            <div class="col-lg-4 col-md-6 mb-4">
                 <a href="" class="navbar-brand">
                     <h1 class="text-primary"><span class="text-white">SAN</span>ANDRES</h1>
                 </a>
-                <p>Sed ipsum clita tempor ipsum ipsum amet sit ipsum lorem amet labore rebum lorem ipsum dolor. No sed
-                    vero lorem dolor dolor</p>
+                <p>Un destino majestuoso en Ecuador que ofrece paisajes
+                     naturales impresionantes y una rica cultura indígena, 
+                     ideal para aventuras y experiencias únicas.
+                    </p>
             </div>
-            <div class="col-lg-3 col-md-6 mb-4">
+            <div class="col-lg-4 col-md-6 mb-4 ">
                 <h5 class="text-white text-uppercase mb-3" style="letter-spacing: 5px;">Servicios</h5>
                 <div class="d-flex flex-column justify-content-start">
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Alojamiento</a>
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Guías Locales</a>
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Asistente virtual</a>
+                    <a class="text-white-50 mb-2" href="/"><i class="fa fa-angle-right mr-2"></i>Inicio</a>
+                    <a class="text-white-50 mb-2" href="{% url 'alojamiento:ver_alojamientos_detalle' %}"><i class="fa fa-angle-right mr-2"></i>Alojamiento</a>
+                    <a class="text-white-50 mb-2" href="{% url 'guias:ver_guias' %}"><i class="fa fa-angle-right mr-2"></i>Guías Locales</a>
+                    <a class="text-white-50 mb-2" ><i class="fa fa-angle-right mr-2"></i>Asistente virtual</a>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <h5 class="text-white text-uppercase mb-3" style="letter-spacing: 5px;">Usefull Links</h5>
-                <div class="d-flex flex-column justify-content-start">
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>About</a>
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Destination</a>
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Services</a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <h5 class="text-white text-uppercase mb-3" style="letter-spacing: 5px;">Contact Us</h5>
-                <p><i class="fa fa-map-marker-alt mr-2"></i>123 Street, New York, USA</p>
-                <p><i class="fa fa-phone-alt mr-2"></i>+012 345 67890</p>
-                <p><i class="fa fa-envelope mr-2"></i>info@example.com</p>
+           
+            <div class="col-lg-4 col-md-6 mb-4">
+                <h5 class="text-white text-uppercase mb-3" style="letter-spacing: 5px;">Contáctanos</h5>
+                <p><i class="fa fa-map-marker-alt mr-2"></i>San Andrés, Chimborazo</p>
+                <p><i class="fa fa-phone-alt mr-2"></i> 32904472</p>
+                <p><i class="fa fa-envelope mr-2"></i> Sanandesguanochimborazo@yahoo.es</p>
             </div>
         </div>
+        <p class="m-0 text-center">© 2024 Desarrollado por Stalyn. Todos los derechos reservados.</p>
     </div>
+    </div>
+    
     <!-- Footer End -->
 
     <script>

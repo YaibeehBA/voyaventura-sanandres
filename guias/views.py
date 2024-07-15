@@ -21,9 +21,13 @@ def rutas_por_guia(request, guia_id):
 
 def detalle_ruta(request, ruta_id):
     ruta = get_object_or_404(Ruta, id=ruta_id)
+  
     return render(request, 'guiasturistico/detalle_ruta.html', {'ruta': ruta})
 
-
+def detalle_ruta_con_guia(request, ruta_id, guia_id):
+    ruta = get_object_or_404(Ruta, id=ruta_id)
+    guia = get_object_or_404(GuiaTuristico, id=guia_id, rutas=ruta)
+    return render(request, 'guiasturistico/detalle_ruta.html', {'ruta': ruta, 'guia': guia})
 
 def ver_guias(request):
     base_queryset = GuiaTuristico.objects.filter(estado__in=["Aprobado", "Disponible"])

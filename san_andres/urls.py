@@ -34,6 +34,7 @@ urlpatterns = [
     path("guias/", include("guias.urls")),
     path("reservacion/", include("reservacion.urls")),
     path('reportes/', include('user_dashboard.urls')),
+   
     
 
 

@@ -7,12 +7,12 @@
         <div class="col-12 my-5 mb-4 px-4">
             <h2 class="fw-bold">CONFIRMAR RESERVACIÓN</h2>
             <div style="font-size: 14px">
-                <a href="" class="text-secondary text-decoration-none">Inicio</a>
-                <span class="text-secondary"> > </span>
+                <a href="/" class="text-black-50 text-decoration-none">Inicio</a>
+                <span class="text-black-50"> > </span>
                 <a href="{% url 'alojamiento:alojamiento_detalle' alojamiento.pk %}"
-                    class="text-secondary text-decoration-none">Hospedaje</a>
-                <span class="text-secondary"> > </span>
-                <a href="#" class="text-secondary text-decoration-none">Confirmar</a>
+                    class="text-black-50 text-decoration-none">Hospedaje</a>
+                <span class="text-black-50"> > </span>
+                <a href="#" class="text-black-50 text-decoration-none">Confirmar</a>
             </div>
         </div>
 
@@ -98,9 +98,32 @@
             </div>
         </div>
     </div>
+
+    <div class="card mt-5 shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="fw-bold text-uppercase">Detalle del Alojamiento</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-uppercase mb-3">Información del Alojamiento</h6>
+                    <div class="mb-3 text-dark">
+                        <p class="mb-0"><strong>Nombre:</strong> {{ alojamiento.nombre }}</p>
+                        <p class="mb-0"><strong>Descripción:</strong> {{ alojamiento.descripcion }}</p>
+                        <p class="mb-0"><strong>Dirección:</strong> {{ alojamiento.direccion }}</p>
+                        <p class="mb-0"><strong>Celular:</strong> {{ alojamiento.celular }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-uppercase mb-3">Descripción de la Habitación</h6>
+                    <p>{{ habitacion.descripcion  }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
 </div>
-
-
 
 
 

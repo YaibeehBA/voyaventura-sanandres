@@ -68,14 +68,15 @@
                     <i class="fa-solid fa-person-hiking mr-2" style="color: #0953d3;"></i>Capacidad:
                   </div>
                   <div>
-                    {{ ruta.capacidad }} personas
+                    {{ ruta.capacidad }} 
                   </div>
                 </div>
                
-
-                <a href="{% url 'guias:detalle_ruta' ruta.id %}" class="mt-2 btn btn-primary btn-sm btn-lg btn-block add-to-selection">
+                <a href="{% url 'guias:detalle_ruta_con_guia' ruta.id guia.id %}" class="mt-2 btn btn-primary btn-sm btn-lg btn-block add-to-selection">
                   <i class="fa-solid fa-calendar-days mr-2" style="color: #1a5dd1;"></i> Reservar
                 </a>
+
+                
               </div>
             </div>
           </div>
