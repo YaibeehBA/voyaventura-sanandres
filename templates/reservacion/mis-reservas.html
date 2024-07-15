@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<div class="container mt-5">
+    <h2>Mis Reservas</h2>
+
+    <div class="reservas-lista">
+        <h3>Reservaciones de Alojamiento</h3>
+        {% if reservaciones %}
+        <table class="table table-striped" id="tabla-alojamiento">
+            <thead>
+                <tr>
+                    <th>Alojamiento</th>
+                    <th>Fecha de Ingreso</th>
+                    <th>Fecha de Salida</th>
+                    <th>Habitación</th>
+                    <th>Adultos</th>
+                    <th>Niños</th>
+                    <th>Estado del Pago</th>
+                    <th>Total</th>
+                    <th>Fecha de Creación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in reservaciones %}
+                <tr>
+                    <td>{{ reserva.alojamiento.nombre }}</td>
+                    <td>{{ reserva.fecha_ingreso }}</td>
+                    <td>{{ reserva.fecha_salida }}</td>
+                    <td>
+                        {% for habitacion in reserva.habitacion.all %}
+                        {% if forloop.last %}
+                        {{ habitacion.numero_habitacion }}
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>{{ reserva.num_adultos}}</td>
+                    <td>{{ reserva.num_ninos }}</td>
+                    <td>{{ reserva.estado_pago }}</td>
+                    <td>${{ reserva.total }}</td>
+                    <td>{{ reserva.fecha }}</td>
+                    <td>
+                        <a href="{% url 'reservacion:descargar_ticket' reserva.id %}"> <i class="fa-solid fa-receipt mr-2"></i>Descargar Ticket</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% include 'paginator.html' with entity=reservaciones paginator=paginator_reservaciones %}
+        {% else %}
+        <p>No tienes reservas de alojamiento aún.</p>
+        {% endif %}
+    </div>
+
+    <div class="reservas-lista mt-4">
+        <h3>Reservaciones de Guía Turístico</h3>
+        {% if reservaciones_guias %}
+        <table class="table table-striped" id="tabla-guias">
+            <thead>
+                <tr>
+                    <th>Ruta</th>
+                    <th>Guía</th>
+                    <th>Fecha de Reserva</th>
+                    <th>Número de Personas</th>
+                    <th>Estado del Pago</th>
+                    <th>Total</th>
+                    <th>Fecha de Creación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in reservaciones_guias %}
+                <tr >
+                    <td>{{ reserva.ruta.nombre }}</td>
+                    <td>{{ reserva.guia.nombre }}</td>
+                    <td>{{ reserva.fecha_reserva }}</td>
+                    <td >{{ reserva.num_personas }}</td>
+                    <td>{{ reserva.estado_pago }}</td>
+                    <td>${{ reserva.total }}</td>
+                    <td>{{ reserva.fecha_creacion }}</td>
+                    <td>
+                        <a href="{% url 'reservacion:descargar_ticket_guia' reserva.id %}"> <i class="fa-solid fa-receipt mr-2"></i>Descargar Ticket</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% include 'paginator.html' with entity=reservaciones_guias paginator=paginator_reservaciones_guias %}
+        {% else %}
+        <p>No tienes reservas de guía turístico aún.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    $("#tabla-alojamiento").DataTable({
+  responsive: true,
+  "pageLength": 5,
+  language: {
+    decimal: "",
+    emptyTable: "No hay información",
+    info: "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+    infoEmpty: "Mostrando 0 to 0 of 0 Entradas",
+    infoFiltered: "(Filtrado de _MAX_ total entradas)",
+    infoPostFix: "",
+    thousands: ",",
+    lengthMenu: "Mostrar _MENU_ Entradas",
+    loadingRecords: "Cargando...",
+    processing: "Procesando...",
+    search: "Buscar:",
+    zeroRecords: "Sin resultados encontrados",
+    paginate: {
+      first: "Primero",
+      last: "Ultimo",
+      next: "Siguiente",
+      previous: "Anterior",
+    },
+  },
+});
+
+$("#tabla-guias").DataTable({
+  responsive: true,
+  "pageLength": 5,
+  language: {
+    decimal: "",
+    emptyTable: "No hay información",
+    info: "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+    infoEmpty: "Mostrando 0 to 0 of 0 Entradas",
+    infoFiltered: "(Filtrado de _MAX_ total entradas)",
+    infoPostFix: "",
+    thousands: ",",
+    lengthMenu: "Mostrar _MENU_ Entradas",
+    loadingRecords: "Cargando...",
+    processing: "Procesando...",
+    search: "Buscar:",
+    zeroRecords: "Sin resultados encontrados",
+    paginate: {
+      first: "Primero",
+      last: "Ultimo",
+      next: "Siguiente",
+      previous: "Anterior",
+    },
+  },
+  
+});
+</script>
+{% endblock %}

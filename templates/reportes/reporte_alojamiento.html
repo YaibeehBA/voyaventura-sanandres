@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Reporte de Reservaciones - {{ alojamiento.nombre }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        header {
+           
+            padding: 20px;
+            text-align: center;
+            
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        header div {
+            margin: 10px 0;
+        }
+        header div span {
+            font-weight: bold;
+        }
+        main {
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 5px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        tfoot td {
+            font-weight: bold;
+        }
+        .total-row td {
+            background-color: #f9f9f9;
+        }
+        .truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px; /* Ajusta el ancho máximo según tus necesidades */
+    }
+       
+    </style>
+</head>
+<body>
+    <header>
+        
+        <h1>GAD PARROQUIAL DE SAN ANDRES</h1>
+        <div>
+            <div><span>Alojamiento:</span> {{ alojamiento.nombre }}</div>
+            <div><span>Dirección:</span> {{ alojamiento.direccion }}</div>
+            <div><span>Email:</span> {{ alojamiento.email }}</div>
+            <div><span>Fecha de inicio del reporte:</span> {{ fecha_inicio|date:"d F, Y" }}</div>
+            <div><span>Fecha de fin del reporte:</span> {{ fecha_fin|date:"d F, Y" }}</div>
+            <div><span>Generado por:</span> {{ usuario_generador }}</div>
+            
+        </div>
+    </header>
+    <main>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Cliente</th>
+                    <th>Fecha de ingreso</th>
+                    <th>Tipo de habitación</th>
+                    <th>Id pago</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in reservaciones %}
+                <tr>
+                    <td style="width: 1cm;">{{ forloop.counter }}</td>
+                    <td>{{ reserva.user.full_name|default:reserva.user.username }}</td>
+                    <td style="width: 3cm;">{{ reserva.fecha_ingreso|date:"d F, Y" }}</td>
+                    <td style="width: 3cm;">{{ reserva.habitacion_tipo.tipo }}</td>
+                    <td>{{ reserva.pago_id }}</td>
+                    <td style="width: 2cm;">${{ reserva.total|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+                <tr class="total-row">
+                    <td colspan="5" style="font-weight: bold;">TOTAL</td>
+                    <td style="font-weight: bold;">${{ total_general|floatformat:2 }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <br><br>
+        <div >
+            <div>Aviso:</div>
+            <div>Tiene 30 días para validar este reporte.</div>
+            <div>
+            
+                El reporte se generó automáticamente y solo es válido con la firma del presidente y el sello del Gad San Andres
+            </div>
+        </div>
+    </main>
+  
+        
+   
+    
+</body>
+</html>

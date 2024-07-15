@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 my-5 mb-4 px-4">
+            <h2 class="fw-bold">CONFIRMAR RESERVACIÓN</h2>
+            <div style="font-size: 14px">
+                <a href="" class="text-secondary text-decoration-none">Inicio</a>
+                <span class="text-secondary"> > </span>
+                <a href="{% url 'alojamiento:alojamiento_detalle' alojamiento.pk %}"
+                    class="text-secondary text-decoration-none">Hospedaje</a>
+                <span class="text-secondary"> > </span>
+                <a href="#" class="text-secondary text-decoration-none">Confirmar</a>
+            </div>
+        </div>
+
+        <div class="col-lg-7 col-md-12 px-4" style="margin-top: -1cm;">
+            <div class="text-center">
+                <h4>{{ alojamiento.nombre }}</h4>
+            </div>
+            <div class="card p-3 shadow-sm rounded">
+                <img src="{{ tipo_alojamiento.imagen_1.url }}" class="card-img-top px-2" alt="Room Image"
+                    id="productImage" />
+                <h5 class="mt-2 text-center">Tipo de habitación {{ tipo_alojamiento.tipo }}</h5>
+                <h6>$ {{ precio|floatformat:"2" }} Por Noche</h6> <!-- Formateo como número decimal -->
+                <div class="d-flex justify-content-between small">
+                    <div class="d-flex align-items-center"><i class="fa-solid fa-tags mr-2"></i>Habitación:</div>
+                    <div>{{ habitacion.numero_habitacion }}</div>
+                </div>
+                <div class="small d-flex justify-content-between mt-2">
+                    <div><i class="fa-solid fa-users mr-2" style="color: #af7018;"></i>Capacidad:</div>
+                    <div>{{ tipo_alojamiento.capacidad }}</div>
+                </div>
+                <div class="small d-flex justify-content-between mt-1">
+                    <div><i class="fa-solid fa-bed mr-2" style="color: #0676bc;"></i>Camas:</div>
+                    <div>{{ tipo_alojamiento.numero_camas }}</div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://js.stripe.com/v3/"></script>
+
+        <div class="col-lg-5 col-md-12 px-4">
+            <div class="card mb-4 border-0 shadow-sm rounded-3">
+                <div class="card-body">
+                    <form id="booking_form" method="POST">
+                        {% csrf_token %}
+                        <h6 class="mb-3">Detalles de la reservación</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label mb-1">Nombre</label>
+                                <input name="name" type="text" class="form-control shadow-none" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Número de teléfono</label>
+                                <input id="phonenum" name="phonenum" type="number" class="form-control shadow-none" required>
+                            </div>
+                            
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Dirección</label>
+                                <textarea name="address" class="form-control shadow-none" rows="1" required></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Fecha de ingreso</label>
+                                <input name="checkin" id="checkin" type="date" class="form-control shadow-none"
+                                    required>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Fecha de salida</label>
+                                <input name="checkout" id="checkout" type="date" class="form-control shadow-none"
+                                    required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Adultos</label>
+                                <input name="num_adultos" id="num_adultos" type="number" class="form-control shadow-none" min="1" 
+                                value="1" required onchange="validateCapacity()" oninput="validateCapacity()" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Niños</label>
+                                <input name="num_ninos" id="num_ninos" type="number" class="form-control shadow-none" 
+                                min="0" value="0" required onchange="validateCapacity()" oninput="validateCapacity()" />
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div id="date-error" class="text-danger mb-3"></div>
+                                <h6>Total a pagar: $<span id="totalPrice">0.00</span></h6>
+                            </div>
+                            <div class="col-12">
+                                <button class="btn w-100 text-white custom-bg shadow-none mb-1 bg-dark" id="submitBtn">
+                                    Pagar Ahora
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const today = new Date().toISOString().split("T")[0];
+    const checkinInput = document.getElementById("checkin");
+    const checkoutInput = document.getElementById("checkout");
+    const submitBtn = document.getElementById("submitBtn");
+    const dateError = document.getElementById("date-error");
+    const totalPriceElem = document.getElementById("totalPrice");
+    const pricePerNight = parseFloat("{{ precio_str }}");
+   
+    const capacidadMaxima = parseInt("{{ tipo_alojamiento.capacidad }}");
+    const numAdultosInput = document.getElementById("num_adultos");
+    const numNinosInput = document.getElementById("num_ninos");
+    const phoneInput = document.getElementById('phonenum');
+
+    checkinInput.setAttribute("min", today);
+    checkoutInput.setAttribute("min", today);
+
+    phoneInput.addEventListener('input', function (e) {
+        var cleanedValue = this.value.replace(/\D/g, '');
+        if (cleanedValue.length > 10) {
+            cleanedValue = cleanedValue.slice(0, 10);
+        }
+        this.value = cleanedValue;
+    });
+
+    function validateDates() {
+        const checkinDate = new Date(checkinInput.value);
+        const checkoutDate = new Date(checkoutInput.value);
+        let isValid = true;
+
+        if (checkoutDate <= checkinDate) {
+            dateError.textContent = "La fecha de salida debe ser después de la fecha de ingreso.";
+            isValid = false;
+        } else {
+            dateError.textContent = "";
+        }
+
+        submitBtn.disabled = !isValid;
+        return isValid;
+    }
+
+    function calculateTotalPrice() {
+    const checkinDate = new Date(checkinInput.value);
+    const checkoutDate = new Date(checkoutInput.value);
+    if (checkinDate && checkoutDate && checkoutDate > checkinDate) {
+        const timeDifference = checkoutDate.getTime() - checkinDate.getTime();
+        const daysDifference = timeDifference / (1000 * 3600 * 24);
+        const totalPrice = daysDifference * pricePerNight;
+        
+        console.log("Diferencia de días:", daysDifference);
+        console.log("Precio por noche:", pricePerNight);
+        console.log("Precio total calculado:", totalPrice);
+        
+        totalPriceElem.textContent = totalPrice.toFixed(2); // Formatear a dos decimales
+    } else {
+        totalPriceElem.textContent = '0.00';
+    }
+}
+
+
+
+
+
+    function validateCapacity() {
+        const numAdultos = parseInt(numAdultosInput.value) || 0;
+        const numNinos = parseInt(numNinosInput.value) || 0;
+        const totalPersonas = numAdultos + numNinos;
+
+        if (totalPersonas > capacidadMaxima) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Capacidad excedida',
+                text: `La capacidad máxima para esta habitación es de ${capacidadMaxima} personas.`
+            });
+            // Ajustar los valores para no exceder la capacidad
+            if (numAdultos > capacidadMaxima) {
+                numAdultosInput.value = capacidadMaxima;
+                numNinosInput.value = 0;
+            } else {
+                numNinosInput.value = capacidadMaxima - numAdultos;
+            }
+        }
+    }
+
+    checkinInput.addEventListener("change", function () {
+        checkoutInput.setAttribute("min", checkinInput.value);
+        validateDates();
+        calculateTotalPrice();
+    });
+
+    checkoutInput.addEventListener("change", function () {
+        validateDates();
+        calculateTotalPrice();
+    });
+
+    numAdultosInput.addEventListener("input", validateCapacity);
+    numNinosInput.addEventListener("input", validateCapacity);
+
+    document.getElementById("booking_form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (validateDates()) {
+            fetchCheckoutSession();
+        }
+    });
+
+    async function fetchCheckoutSession() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const habitacionId = urlParams.get('habitacion_id');
+        const telefono = phoneInput.value.replace(/\D/g, '');
+
+        if (telefono.length !== 10) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Número de teléfono inválido',
+                text: 'Por favor, ingresa un número de teléfono válido con 10 dígitos.'
+            });
+            return;
+        }
+
+        const numAdultos = parseInt(numAdultosInput.value);
+        const numNinos = parseInt(numNinosInput.value);
+
+        if (numAdultos + numNinos > capacidadMaxima) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Capacidad excedida',
+                text: `La capacidad máxima para esta habitación es de ${capacidadMaxima} personas.`
+            });
+            return;
+        }
+        
+        const response = await fetch("{% url 'reservacion:create_checkout_session' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: JSON.stringify({
+                product_name: "{{ alojamiento.nombre }} - {{ tipo_alojamiento.tipo }}",
+                product_image: document.getElementById("productImage").src,
+                amount: parseFloat(totalPriceElem.textContent) * 100,  // Convertir a centavos
+                alojamiento_id: "{{ alojamiento.id }}",
+                habitacion_tipo_id: "{{ tipo_alojamiento.id }}",
+                habitacion_ids: habitacionId,
+                fecha_ingreso: checkinInput.value,
+                fecha_salida: checkoutInput.value,
+                num_adultos: numAdultos,
+                num_ninos: numNinos
+            }),
+        });
+
+        const session = await response.json();
+
+        if (response.ok) {
+            window.location.href = session.url;
+        } else {
+            console.error(session.error);
+        }
+    }
+});
+</script>
+
+{% endblock %}

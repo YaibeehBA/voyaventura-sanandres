@@ -1,0 +1,361 @@
+
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- portada carousel -->
+<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
+
+
+<div class="container-fluid px-lg-4 mt-4" >
+    <div class="swiper swiper-container" style="margin-top: 1cm;">
+        <div class="swiper-wrapper">
+           
+             
+                    <div class="swiper-slide">
+                        <img src="{% static 'img/carousel-v2.jpg' %}" class="w-100 d-block" style="height: 470px; object-fit: cover;">
+                        <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                            <div class="p-3" style="max-width: 900px;">
+                                <h4 class="text-white text-uppercase mb-md-3">GAD PARROQUIAL DE SAN ANDRES</h4>
+                                <h1 class="display-3 text-white mb-md-4">Alojamiento Único e  Inolvidable</h1>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="swiper-slide">
+                        <img src="{% static 'img/carousel-v1.jpg' %}" class="w-100 d-block" style="height: 470px; object-fit: cover;">
+                        <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                            <div class="p-3" style="max-width: 900px;">
+                                <h4 class="text-white text-uppercase mb-md-3"> GAD PARROQUIAL DE SAN ANDRES</h4>
+                                <h1 class="display-3 text-white mb-md-4">Guías Expertos  Viajes Memorables</h1>
+                            </div>
+                        </div>
+                    </div>
+            
+
+            
+        </div>
+    </div>
+</div>
+
+
+ 
+<!-- portada carousel fin -->
+
+
+
+
+<!-- Service Start -->
+<div class="container-fluid py-5">
+    <div class="container pt-5 pb-3">
+        <div class="text-center mb-3 pb-3">
+            <h6 class="text-primary text-uppercase" style="letter-spacing: 5px;">Servicios</h6>
+            <h1>Alojamiento & Guías Turísticos</h1>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="service-item bg-white text-center mb-2 py-5 px-4">
+                    <i class="fa fa-2x fa-route mx-auto mb-4"></i>
+                    <h5 class="mb-2"> Guía Turísticos</h5>
+                    <p class="m-0">
+                        Descubre nuestra ciudad encantadora con guías expertos. Monumentos históricos, gastronomía local, paisajes deslumbrantes. 
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="service-item bg-white text-center mb-2 py-5 px-4">
+                    <i class="fa fa-2x fa-robot mx-auto mb-4"></i>
+                    <h5 class="mb-2">Asistente Virtual</h5>
+                    <p class="m-0">
+                        ¿Tienes preguntas? Utiliza nuestro asistente virtual. Respuestas rápidas y precisas a tus dudas. Asistencia confiable cuando la necesites.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="service-item bg-white text-center mb-2 py-5 px-4">
+                    <i class="fa fa-2x fa-hotel mx-auto mb-4"></i>
+                    <h5 class="mb-2">Alojamiento</h5>
+                    <p class="m-0">
+                        Descubre alojamientos disponibles para tu viaje. Variedad de opciones, detalles precisos. Reserva tu hospedaje ideal aquí.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Service End -->
+
+
+<!-- Packages Start -->
+<div class="container-fluid py-2">
+    <div class="container pt-2 pb-3">
+        <div class="text-center mb-3 pb-3">
+            <h6 class="text-primary text-uppercase" style="letter-spacing: 5px;">Alojamiento</h6>
+            <h1>Tu Perfecto Lugar</h1>
+        </div>
+        <div class="row">
+            {% for a in alojamiento %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card border-0 shadow" style="max-width: 40060px; margin:auto;">
+                    <div class="m-2">
+                        <img class="img-fluid w-100" src="{{ a.imagen.url }}" style='height: 220px; object-fit: cover;'>
+                    </div>
+                    <div class="p-4">
+                        <div class="mb-3">
+                            <small class="m-0">Dirección</small>
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-map-marker-alt text-primary mr-2"></i>
+                                <span>{{ a.direccion }}</span>
+                            </div>
+                            <small class="m-0">Teléfono</small>
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-phone text-primary mr-2"></i>
+                                <span>{{ a.celular }}</span>
+                            </div>
+                        </div>
+                        <a class="h5 text-decoration-none" href="{% url 'alojamiento:alojamiento_detalle' a.pk %}">{{ a.nombre|upper }}</a>
+                        <div class="border-top mt-4 pt-4">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="m-0" href="#"><i class="fa fa-bed mr-2"></i> <small>VER HABITACIONES</small></h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                        
+            {% endfor %}
+        </div>
+        <div class="col-lg-12  text-center mt-5">
+            <a href="{% url 'alojamiento:ver_alojamientos_detalle' %}" class="btn btn-sm btn-outline-dark rounded-0 fw-bold shadow-none">Mas Alojamientos</a>
+        </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="slide-container swiper">
+    <div class="text-center mb-3 pb-3">
+        <h6 class="text-primary text-uppercase" style="letter-spacing: 5px;">Guías Turísticos</h6>
+        <h1>Lugares Por Explorar</h1>
+    </div>
+    <div class="slide-content">
+        <div class="card-wrapper swiper-wrapper">
+            {% for guia in guiaturisticos %}
+                {% with ruta=guia.rutas.first %}
+                <div class="card swiper-slide">
+                    <div class="image-content">
+                        <span class="overlay" style="background-image: url('{{ ruta.imagen.url  }}');"></span>
+                        <div class="card-image">
+                            <img class="card-img" src="{{ guia.foto.url}}" alt="Imagen de la ruta">
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h2 class="name mt-5">{{ guia.nombre }}</h2>
+                        <div class="mb-3">
+                            <small class="m-0">Correo</small>
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-map-marker-alt text-primary mr-2"></i>
+                                <span>{{ guia.email }}</span>
+                            </div>
+                            <small class="m-0">Teléfono</small>
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-phone text-primary mr-2"></i>
+                                <span>{{ guia.telefono }}</span>
+                            </div>
+                        </div>
+                       
+                        <button class="button">
+                            <a class="text-light"  href="{% url 'guias:rutas_por_guia' guia.pk %}">VER MAS ACTIVIDADES</a>
+                        </button>
+                    </div>
+                </div>
+                {% endwith %}
+            {% endfor %}
+        </div>
+        <div class="col-lg-12  text-center mt-5">
+            <a href="{% url 'guias:ver_guias' %}" class="btn btn-sm btn-outline-dark rounded-0 fw-bold shadow-none">Mas guías turísticos</a>
+        </div>
+    </div>
+    <div class="swiper-button-next swiper-navBtn"></div>
+    <div class="swiper-button-prev swiper-navBtn"></div>
+    <div class="swiper-pagination"></div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+
+<style>
+.slide-container{
+  max-width: 1120px;
+  width: 100%;
+  padding: 40px 0;
+}
+.slide-content{
+  margin: 0 40px;
+  overflow: hidden;
+  border-radius: 25px;
+}
+.card{
+  border-radius: 25px;
+  background-color: #FFF;
+}
+.image-content,
+.card-content{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 14px;
+}
+.image-content{
+  position: relative;
+  row-gap: 5px;
+  padding: 25px 0;
+}
+.overlay{
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  border-radius: 25px 25px 0 25px;
+}
+.overlay::before,
+.overlay::after{
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -40px;
+  height: 40px;
+  width: 40px;
+  background-color: #fafafa;
+}
+.overlay::after{
+  border-radius: 0 25px 0 0;
+  background-color: #FFF;
+}
+.card-image{
+  position: relative;
+  height: 150px;
+  width: 150px;
+  border-radius: 50%;
+  background: #FFF;
+  padding: 3px;
+  transform: translateY(80px);
+}
+.card-image .card-img{
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+ 
+}
+.name{
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+}
+.description{
+  font-size: 14px;
+  color: #707070;
+  text-align: center;
+}
+.button{
+  border: none;
+  font-size: 16px;
+  color: #FFF;
+  padding: 8px 16px;
+  background-color: #16df16;
+  border-radius: 6px;
+  margin: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.button:hover{
+  background: #3a970fbb;
+}
+.swiper-navBtn{
+  color: #6E93f7;
+  transition: color 0.3s ease;
+}
+.swiper-navBtn:hover{
+  color: #4070F4;
+}
+.swiper-navBtn::before,
+.swiper-navBtn::after{
+  font-size: 35px;
+}
+.swiper-button-next{
+  right: 0;
+}
+.swiper-button-prev{
+  left: 0;
+}
+.swiper-pagination-bullet{
+  background-color: #6E93f7;
+  opacity: 1;
+}
+.swiper-pagination-bullet-active{
+  background-color: #4070F4;
+}
+@media screen and (max-width: 768px) {
+  .slide-content{
+    margin: 0 10px;
+  }
+  .swiper-navBtn{
+    display: none;
+  }
+}
+</style>
+
+<script>
+var swiper = new Swiper(".slide-content", {
+    slidesPerView: 3,
+    spaceBetween: 25,
+    loop: true,
+    centerSlide: 'true',
+    fade: 'true',
+    grabCursor: 'true',
+    pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+        dynamicBullets: true,
+    },
+    navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+    },
+    breakpoints: {
+        0: {
+            slidesPerView: 1,
+        },
+        520: {
+            slidesPerView: 2,
+        },
+        950: {
+            slidesPerView: 3,
+        },
+    },
+});
+
+var swiper = new Swiper(".swiper-container", {
+            spaceBetween: 30,
+            effect: "fade",
+            loop: true,
+            autoplay: {
+                delay: 8500,
+                disableOnInteraction: false,
+            }
+
+        });
+</script>
+
+
+
+
+{% endblock %}
+
+      
+  

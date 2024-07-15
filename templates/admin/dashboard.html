@@ -1,0 +1,249 @@
+{% load i18n static %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+   <!-- DataTables CSS -->
+   <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+   <!-- jQuery -->
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <!-- DataTables JS -->
+   <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <style>
+        /* Estilos personalizados aquí */
+        .card-purple { background-color: #8e44ad; color: white; }
+        .card-blue { background-color: #3498db; color: white; }
+        .card-red { background-color: #e74c3c; color: white; }
+        .card-orange { background-color: #e67e22; color: white; }
+    </style>
+</head>
+
+<nav class="text-light main-header navbar navbar-expand navbar-indigo navbar-dark" id="jazzy-navbar" style="background-color: rgb(102, 16, 242);">
+    <ul class="navbar-nav">
+        <li class="nav-item">
+           <a href="/admin/" class="nav-link"> <i class="fa-regular fa-circle-left mt-2"></i></a>
+        </li>
+
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/" class="nav-link">Regresar</a>
+        </li>
+    </ul>
+</nav>
+<h2 class="card-title text-center mt-4">Dashboard de Reservaciones de Alojamiento y Guías Turísticos </h2>
+
+<body>
+
+<div class="container-fluid mt-4">
+    <div class="container">
+        <div class="row">
+          
+
+            <div class="col-md-3 mb-4">
+                <div class="card card-blue">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="fa-solid fa-user-tie fa-2x mr-3" style="margin-right: 1cm;"></i>
+                        <div>
+                            <h5 class="card-title mb-0">{{ admin_user }}</h5>
+                            <p class="card-text mb-0">Administrador </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <div class="card card-purple">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="fa-solid  fa-users fa-2x mr-3" style="margin-right: 1cm;"></i>
+                        <div>
+                            <h5 class="card-title mb-0 ">{{ usuarios_count }}</h5>
+                            <p class="card-text mb-0">Usuarios Registrados</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="col-md-3 mb-4">
+                <div class="card card-orange">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="fa-solid fa-building fa-2x mr-3" style="margin-right: 1cm;"></i>
+                        <div>
+                            <h5 class="card-title mb-0">{{ alojamientos_count }}</h5>
+                            <p class="card-text mb-0">Alojamientos Registrados </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <div class="card card-blue">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="fa-solid fa-id-card fa-2x mr-3" style="margin-right: 1cm;"></i>
+                        <div>
+                            <h5 class="card-title mb-0">{{ guias_count }}</h5>
+                            <p class="card-text mb-0">Guías Turísticos </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Gráfica principal -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Crecimiento de Reservaciones</h5>
+                    <div class="d-flex justify-content-center">
+                        <span class="badge text-secondary text-light" style="margin-right: 10px; background-color: rgb(38, 159, 251);">Alojamientos: {{ total_alojamientos_pagados }}</span>
+                        <span class="badge text-secondary text-light" style="margin-right: 10px; background-color: rgb(37, 230, 164);">Guías: {{ total_guias_pagados }}</span>
+                        <span class="badge bg-warning text-secondary text-light" style="margin-right: 10px;">Total: {{ total_general_pagado }}</span>
+                    </div>
+                    <div id="lineChart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gráficas circulares -->
+        <div class="col-md-4">
+            <!-- Gráfica circular 1 -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Distribución de las Reservaciones </h5>
+                    <div id="pieChart"></div>
+                </div>
+            </div>
+    
+            <!-- Gráfica barra 2 -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Número de Reservaciones Pagadas por Servicio</h5>
+                    <div id="barChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+   
+    <div class="row mt-4">
+        <!-- Actividades recientes -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Top 3 Alojamientos en {{ historial_mes_actual }}</h5>
+                    <ul class="list-group">
+                        {% for tipo_alojamiento in tipos_alojamiento_reservados %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ tipo_alojamiento.tipo }} - {{ tipo_alojamiento.alojamiento.nombre }}
+                                <span class="badge badge-primary badge-pill" style="background-color: rgb(38, 159, 251);" >{{ tipo_alojamiento.reservas }} reservas</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <h5 class="card-title mt-3">Top 3 Guías en {{ historial_mes_actual }}</h5>
+                    <ul class="list-group">
+                        {% for guia in guias_mas_reservados %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ guia.nombre }}
+                                <span class="badge badge-primary badge-pill"style="background-color: rgb(37, 230, 164);" >{{ guia.reservas }} reservas</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+       
+            
+        <!-- Tabla de estado de pedidos -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Historial de transacciones de {{ historial_mes_actual }}</h5>
+                    <table class="table table-striped table-bordered" id="tabla">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Nº</th>
+                                <th>Fecha de Creación</th>
+                                <th>Usuario</th>
+                                <th>Monto</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaccion in todas_reservaciones %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ transaccion.fecha_creacion_reserva|date:"d/m/Y" }}</td>
+                                    <td>{{ transaccion.nombre_usuario }}</td>
+                                    <td>${{ transaccion.monto }}</td>
+                                    <td>{{ transaccion.tipo }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5">No hay transacciones este mes.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+
+<script id="dashboard-data" type="application/json">
+    {{ dashboard_data_json|safe }}
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="{% static 'js/custom.js' %}"></script>
+
+
+<script>
+$("#tabla").DataTable({
+  responsive: true,
+  language: {
+    decimal: "",
+    emptyTable: "No hay información",
+    info: "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+    infoEmpty: "Mostrando 0 to 0 of 0 Entradas",
+    infoFiltered: "(Filtrado de _MAX_ total entradas)",
+    infoPostFix: "",
+    thousands: ",",
+    lengthMenu: "Mostrar _MENU_ Entradas",
+    loadingRecords: "Cargando...",
+    processing: "Procesando...",
+    search: "Buscar:",
+    zeroRecords: "Sin resultados encontrados",
+    paginate: {
+      first: "Primero",
+      last: "Ultimo",
+      next: "Siguiente",
+      previous: "Anterior",
+    },
+  },
+});
+</script>
+
+</body>
+</html>
+
+{% endblock %}

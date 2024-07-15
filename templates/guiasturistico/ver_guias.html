@@ -1,0 +1,189 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<style>
+  .card_box {
+    overflow: hidden;
+    border-radius: 20px;
+  }
+
+  .card_box span {
+    position: absolute;
+    overflow: hidden;
+    width: 150px;
+    height: 150px;
+    top: -25px;
+    left: -10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  .card_box span::before {
+    content: "Más reservado";
+    position: absolute;
+    width: 150%;
+    height: 40px;
+    background-image: linear-gradient(45deg, #ff6547 0%, #ffb144 51%, #ff7053 100%);
+    transform: rotate(-45deg) translateY(-20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.23);
+  }
+
+  .card_box span::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    bottom: 0;
+    left: 0;
+    height: 10px;
+    z-index: -1;
+    box-shadow: 140px -140px #cc3f47;
+    background-image: linear-gradient(45deg, #ff512f 0%, #f09819 51%, #ff512f 100%);
+  }
+</style>
+
+<div class="my-5 px-4">
+  <h2 class="fw-bold h-font text-center">Guías Turísticos</h2>
+  <div class="h-line bg-dark"></div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-3 col-md-12 mb-lg-0 mb-4 ps-4">
+      <!-- Formulario de filtro -->
+      <div class="container-fluid position-relative nav-bar p-0">
+        <nav class="navbar navbar-expand-lg bg-light navbar-light shadow-lg">
+          <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarfiltro">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-between px-3" id="navbarfiltro">
+            <div class="navbar-nav mr-auto py-0">
+              <form method="GET" action="{% url 'guias:ver_guias' %}" class="w-100">
+                <h4 class="mt-2">Buscar por</h4>
+
+                <!-- Filtro por precio máximo de las rutas asociadas -->
+                <div class="border bg-light p-3 rounded mb-3">
+                  <h5 class="mb-3" style="font-size: 18px;">Precio máximo de las actividades</h5>
+                  <input type="number" name="precio_max" class="form-control" value="{{ request.GET.precio_max }}" min="0" step="0.01" oninput="validatePrice(this)" onkeydown="preventInvalidInput(event)" />
+                </div>
+                <script>
+                  function validatePrice(input) {
+                    if (input.value < 0) {
+                      input.value = 0;
+                    }
+                  }
+
+                  function validateInteger(input) {
+                    if (input.value < 1) {
+                      input.value = 1;
+                    } else {
+                      input.value = Math.floor(input.value);
+                    }
+                  }
+
+                  function preventInvalidInput(event) {
+                    const invalidChars = ["-", "e", "+"];
+                    if (invalidChars.includes(event.key)) {
+                      event.preventDefault();
+                    }
+                  }
+
+                  document.querySelectorAll('input[type="number"]').forEach((input) => {
+                    input.addEventListener("input", (event) => {
+                      if (input.min !== "" && parseFloat(input.value) < parseFloat(input.min)) {
+                        input.value = input.min;
+                      }
+                      if (input.name === "num_camas" || input.name === "capacidad") {
+                        input.value = Math.floor(input.value);
+                      }
+                    });
+                  });
+                </script>
+                <!-- Filtro por guía con más rutas asociadas -->
+                <div class="border bg-light p-3 rounded mb-3">
+                  <h5 class="mb-3" style="font-size: 18px;">Guía con más actividades</h5>
+                  <input type="checkbox" id="guia_mas_rutas" name="guia_mas_rutas" value="1" style="margin-left: -5px;" class="form-check-input" {% if request.GET.guia_mas_rutas %}checked{% endif %} />
+                  <label class="form-check-label ml-3" for="guia_mas_rutas">Mostrar actividades del guía</label>
+                </div>
+
+                <!-- Filtro por ruta más reservada -->
+                <div class="border bg-light p-3 rounded mb-3">
+                  <h5 class="mb-3" style="font-size: 18px;">Ruta más reservada</h5>
+                  <input type="checkbox" id="ruta_mas_reservada" name="ruta_mas_reservada" value="1" style="margin-left: -5px;" class="form-check-input" {% if request.GET.ruta_mas_reservada %}checked{% endif %} />
+                  <label class="form-check-label ml-3" for="ruta_mas_reservada">Mostrar ruta más reservada</label>
+                </div>
+
+                <!-- Filtro por guía más reservado -->
+                <div class="border bg-light p-3 rounded mb-3">
+                  <h5 class="mb-3" style="font-size: 18px;">Guía más reservado</h5>
+                  <input type="checkbox" id="guia_mas_reservado" name="guia_mas_reservado" value="1" style="margin-left: -5px;" class="form-check-input" {% if request.GET.guia_mas_reservado %}checked{% endif %} />
+                  <label class="form-check-label ml-3" for="guia_mas_reservado">Mostrar guía más reservado</label>
+                </div>
+
+                <!-- Botón de filtrar -->
+                <button type="submit" class="btn btn-primary w-100">Aplicar filtros</button>
+                <br />
+                <br />
+              </form>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+
+    <div class="col-lg-9 col-md-12 px-4">
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+      {% endfor %} {% endif %} {% if guiaturisticos %} {% for guia in guiaturisticos %}
+      <div class="card mb-4 border-0 shadow">
+        <div class="row g-0 p-3 align-items-center">
+          <div class="col-md-5 mb-lg-0 mb-md-0 mb-3">
+            <div class="card_box">
+              {% if mostrar_cinta and guia.es_mas_reservado %}
+              <span></span>
+              {% endif %}
+              <img src="{{ guia.foto.url }}" class="card-img rounded" style="height: 210px; object-fit: cover;" alt="..." />
+            </div>
+          </div>
+          <div class="col-md-5 px-lg-3 px-md-3 px-0">
+            <h5 class="mb-3">{{ guia.nombre|upper }}</h5>
+            <div class="facilities mb-1">
+              <span class="badge rounded-pill bg-light text-wrap me-1 mb-1 text-black-50">
+                <i class="fa fa-envelope mr-2" style="color: #5abf60;"></i>
+                {{ guia.email }}
+              </span>
+              <span class="badge rounded-pill bg-light text-wrap text-justify me-1 mb-1 text-black-50"> <i class="fa fa-phone mr-2" style="color: #5abf60;"></i> {{ guia.telefono }} </span>
+            </div>
+            <div class="rutas mt-3">
+              <h6>Rutas ofrecidas:</h6>
+              {% for ruta in guia.rutas.all|slice:":2" %}
+              <span class="badge rounded-pill bg-light text-dark text-wrap me-1 mb-1">
+                {{ ruta.nombre }} - ${{ ruta.precio }}
+              </span>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="col-md-2 mt-lg-0 mt-md-0 mt-4 text-center">
+            <a href="{% url 'guias:rutas_por_guia' guia.id %}" class="btn btn-sm w-100 text-white shadow-none mb-2" style="background-color: #7ab730;">Ver todas las rutas</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %} {% endif %}
+    </div>
+  </div>
+</div>
+
+<div>
+  {% include 'paginator.html' with entity=guiaturisticos paginator=paginator%}
+</div>
+
+{% endblock %}

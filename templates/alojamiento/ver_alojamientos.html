@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="my-5 px-4">
+    <h2 class="fw-bold h-font text-center">Alojamientos</h2>
+    <div class="h-line bg-dark"></div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-3 col-md-12 mb-lg-0 mb-4 ps-4">
+            <!-- Formulario de filtro -->
+            <div class="container-fluid position-relative nav-bar p-0">
+                <nav class="navbar navbar-expand-lg bg-light navbar-light shadow-lg">
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarfiltro">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-between px-3" id="navbarfiltro">
+                        <div class="navbar-nav mr-auto py-0">
+                            <form method="GET" action="{% url 'alojamiento:ver_alojamientos_detalle' %}" class="w-100">
+                                <h4 class="mt-2">Buscar por</h4>
+                                <div class="border bg-light p-3 rounded mb-3">
+                                    <h5 class="mb-3" style="font-size: 18px;">Ordenar por</h5>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="mas_reservas" name="mas_reservas" value="1" class="form-check-input" {% if request.GET.mas_reservas %}checked{% endif %}>
+                                        <label class="form-check-label" for="mas_reservas">Más reservados</label>
+                                    </div>
+                                </div>
+                                <div class="border bg-light p-3 rounded mb-3">
+                                    <h5 class="mb-3" style="font-size: 18px;">Precio</h5>
+                                    
+                                    <input type="number" name="precio_max" class="form-control" placeholder="Precio mínimo"
+                                           value="{{ request.GET.precio_max }}" min="0" step="0.01" oninput="validatePrice(this)" onkeydown="preventInvalidInput(event)">
+                                </div>
+                                <div class="border bg-light p-3 rounded mb-3">
+                                    <h5 class="mb-3" style="font-size: 18px;">Número de camas</h5>
+                                    <input type="number" name="num_camas" class="form-control"
+                                           value="{{ request.GET.num_camas }}" min="1" step="1" oninput="validateInteger(this)" onkeydown="preventInvalidInput(event)">
+                                </div>
+                                <div class="border bg-light p-3 rounded mb-3">
+                                    <h5 class="mb-3" style="font-size: 18px;">Número de personas</h5>
+                                    <input type="number" name="capacidad" class="form-control"
+                                           value="{{ request.GET.capacidad }}" min="1" step="1" oninput="validateInteger(this)" onkeydown="preventInvalidInput(event)">
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                                <br><br>
+                            </form>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <script>
+            function validatePrice(input) {
+                if (input.value < 0) {
+                    input.value = 0;
+                }
+            }
+
+            function validateInteger(input) {
+                if (input.value < 1) {
+                    input.value = 1;
+                } else {
+                    input.value = Math.floor(input.value);
+                }
+            }
+
+            function preventInvalidInput(event) {
+                const invalidChars = ['-', 'e', '+'];
+                if (invalidChars.includes(event.key)) {
+                    event.preventDefault();
+                }
+            }
+
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', (event) => {
+                    if (input.min !== '' && parseFloat(input.value) < parseFloat(input.min)) {
+                        input.value = input.min;
+                    }
+                    if (input.name === 'num_camas' || input.name === 'capacidad') {
+                        input.value = Math.floor(input.value);
+                    }
+                });
+            });
+        </script>
+
+        <div class="col-lg-9 col-md-12 px-4">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if alojamientos %}
+                {% for alojamiento in alojamientos %}
+                    <div class="card mb-4 border-0 shadow">
+                        <div class="row g-0 p-3 align-items-center">
+                            <div class="col-md-5 mb-lg-0 mb-md-0 mb-3">
+                                <div class="card-img-container">
+                                    <img src="{{ alojamiento.imagen.url }}" class="card-img rounded" style="height: 210px; object-fit: cover;" alt="...">
+                                </div>
+                            </div>
+                            <div class="col-md-5 px-lg-3 px-md-3 px-0">
+                                <h5 class="mb-3">{{ alojamiento.nombre|upper }}</h5>
+                                <div>
+                                    <span class='badge rounded-pill bg-light text-wrap text-justify me-1 mb-1 text-black-50'>
+                                        <i class="fa-solid fa-location-dot mr-2" style="color: #5abf60;"></i> {{ alojamiento.direccion }}
+                                    </span>
+                                </div>
+                                <div class="facilities mb-1">
+                                    <span class='badge rounded-pill bg-light text-wrap me-1 mb-1 text-black-50'>
+                                        <i class="fa fa-phone mr-2" style="color: #5abf60;"></i>
+                                        {{ alojamiento.celular }}
+                                    </span>
+                                    <span class='badge rounded-pill bg-light text-wrap text-justify me-1 mb-1 text-black-50'>
+                                        <i class="fa-solid fa-location-dot mr-2" style="color: #5abf60;"></i> {{ alojamiento.email }}
+                                    </span>
+                                </div>
+                                <div class="guests">
+                                    <span class="badge rounded-pill bg-light text-wrap text-justify text-black-50">
+                                        {{ alojamiento.descripcion }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-2 mt-lg-0 mt-md-0 mt-4 text-center">
+                                <span class='badge rounded-pill bg-light text-wrap me-1 mb-1' style="color: black;">
+                                    <i class="fa fa-calendar mr-2" style="color: #5abf60;"></i>
+                                    {% if alojamiento.num_reservas > 0 %}
+                                        {{ alojamiento.num_reservas }} reservacione{{ alojamiento.num_reservas|pluralize }} 
+                                    {% else %}
+                                        Sin reservas aún
+                                    {% endif %}
+                                </span>
+                                <div class="pricing">
+                                    <span class='badge rounded-pill bg-light text-wrap text-justify me-5 mb-1' style="color: black;">
+                                        Habitaciones desde ${{ alojamiento.precio_min|floatformat:2 }} 
+                                    </span>
+                                </div>
+                                <a href="{% url 'alojamiento:alojamiento_detalle' alojamiento.pk %}" class="btn btn-sm w-100 text-white shadow-none mb-2" style="background-color: #7AB730;">Ver Alojamiento</a>
+                            </div>
+                        </div>
+                    </div>
+                   
+                {% endfor %}
+                {% else %}
+                <div class="alert alert-info" role="alert">
+                    No se encontraron alojamientos que coincidan con los criterios de búsqueda.
+                </div>
+            {% endif %}
+        </div>
+        
+    </div>
+    
+</div>
+
+<div>
+   
+    {% include 'paginator.html' with entity=alojamientos paginator=paginator%}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pago Cancelado</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Pago Cancelado</h1>
+        <p>El pago ha sido cancelado. Vuelve a intentarlo más tarde.</p>
+        <a href="{% url 'alojamiento:index' %}">Volver a la Página Anterior</a>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+
+{% block slider_content %}
+
+ <!-- DataTables CSS -->
+ <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+ <!-- DataTables JS -->
+ <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+ 
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+<div class="container-fluid header bg-white p-0">
+    <div class="row g-0 align-items-center flex-column-reverse flex-md-row">
+        <div class="col-md-6 p-5 mt-lg-5">
+            <h1 class="display-5 animated fadeIn mb-4">Encuentra Tu <span class="text-primary">Lugar Perfecto</span> Para Alojarte Con Tu Familia</h1>
+            <p class="animated fadeIn mb-4 pb-2">
+                
+               {{alojamiento.descripcion}}
+                </p>
+        </div>
+        <div class="col-md-6 animated fadeIn">
+            <div class="owl-carousel header-carousel owl-loaded owl-drag">
+                <div class="owl-stage-outer">
+                    <div class="swiper swiper-hero">
+                        <div class="swiper-wrapper">
+                            {% for galeria_imagen in alojamiento.galeria_alojamiento.all %}
+                            <div class="swiper-slide " style="height: 370px; object-fit: cover;">
+                                <img src="{{ galeria_imagen.imagen.url }}" class="img-fluid w-100 " />
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
+    <style>
+        
+     
+        @media (min-width: 1024px) {
+            .swiper-hero img {
+                height: 344px;
+            }
+        }
+        .swiper-hero .swiper-button-prev,
+        .swiper-hero .swiper-button-next {
+            --swiper-navigation-size: 20px;
+            background-color: white;
+            height: 70px;
+            width: 50px;
+            margin-top: -35px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .swiper-hero .swiper-button-prev {
+            border-radius: 65px 0 0 65px;
+            left: -10px;
+            
+        }
+        .swiper-hero .swiper-button-next {
+            border-radius: 65px 0 0 65px;
+            right: -10px;
+            
+        }
+        .swiper-hero:hover .swiper-button-prev,
+        .swiper-hero:hover .swiper-button-next {
+            opacity: 1;
+        }
+        .swiper-hero .swiper-pagination {
+            --swiper-pagination-color: white;
+            --swiper-pagination-bullet-size: 6px;
+            --swiper-pagination-bullet-inactive-color: #000;
+            --swiper-pagination-bullet-inactive-opacity: 0.25;
+            --swiper-pagination-bullet-opacity: 1;
+            --swiper-pagination-bullet-horizontal-gap: 2px;
+        }
+        .swiper-hero .swiper-pagination-bullet {
+            box-shadow: inset 0 0 0 1px #fff;
+        }
+        .swiper-hero .swiper-pagination-bullet-active {
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+        }
+        .profile-icon {
+    font-size: 100px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    margin: 0 auto;
+}
+
+    </style>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+    <script>
+        const swiper = new Swiper(".swiper-hero", {
+           
+            direction: "horizontal",
+           
+
+            loop: true,
+            autoplay: {
+                delay: 4000,
+                pauseOnMouseEnter: true,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+        });
+    </script>
+
+{% endblock slider_content %}
+
+{% block content %}
+ 
+<div class="container mt-3">
+
+    <nav class="navbar navbar-light bg-light">
+        <form class="w-100" method="post" action="{% url 'reservacion:habitacion_disponible' %}" id="reservationForm">
+            {% csrf_token %}
+            <div class="form-row justify-content-center mt-2 mb-2">
+                <div class="form-group col-md-2">
+                    <label for="fecha_ingreso">Fecha de ingreso</label>
+                    <input class="form-control" type="date" id="fecha_ingreso" name="fecha_ingreso" placeholder="Fecha de ingreso" required>
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="fecha_salida">Fecha de salida</label>
+                    <input class="form-control" type="date" id="fecha_salida" name="fecha_salida" placeholder="Fecha de salida" required>
+                </div>
+                <div class="form-group col-md-1">
+                    <label for="num_adultos">Adultos</label>
+                    <input class="form-control" type="number" id="num_adultos" name="num_adultos" placeholder="Adultos" value="1" min="1" required>
+                </div>
+                <div class="form-group col-md-1">
+                    <label for="num_ninos">Niños</label>
+                    <input class="form-control" type="number" id="num_ninos" name="num_ninos" placeholder="Niños" value="0" min="0" required>
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="alojamiento-tipo">Tipo de habitación</label>
+                    <select class="form-control" name="alojamiento-tipo" id="alojamiento-tipo">
+                        {% for r in alojamiento.alojamiento_habitaciones_tipos %}
+                            <option value="{{ r.pk }}" data-capacidad="{{ r.capacidad }}">{{ r.tipo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-md-2 d-flex align-items-end">
+                    <button class="btn btn-outline-success btn-block" type="submit">Buscar</button>
+                </div>
+            </div>
+            <input class="form-control" id="alojamiento-id" value="{{ alojamiento.id }}" type="hidden" name="alojamiento-id">
+        </form>
+    </nav>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const fechaIngresoInput = document.getElementById('fecha_ingreso');
+            const fechaSalidaInput = document.getElementById('fecha_salida');
+    
+            fechaIngresoInput.setAttribute('min', today);
+            fechaSalidaInput.setAttribute('min', today);
+    
+            fechaIngresoInput.addEventListener('change', function() {
+                const fechaIngreso = this.value;
+                const minFechaSalida = new Date(fechaIngreso);
+                minFechaSalida.setDate(minFechaSalida.getDate() + 1);
+                fechaSalidaInput.setAttribute('min', minFechaSalida.toISOString().split('T')[0]);
+    
+                if (fechaSalidaInput.value <= fechaIngreso) {
+                    fechaSalidaInput.value = '';
+                }
+            });
+    
+            document.getElementById('reservationForm').addEventListener('submit', function(e) {
+                const numAdultos = parseInt(document.getElementById('num_adultos').value, 10);
+                const numNinos = parseInt(document.getElementById('num_ninos').value, 10);
+                const tipoHabitacion = document.getElementById('alojamiento-tipo');
+                const capacidad = parseInt(tipoHabitacion.options[tipoHabitacion.selectedIndex].getAttribute('data-capacidad'), 10);
+                const fechaIngreso = fechaIngresoInput.value;
+                const fechaSalida = fechaSalidaInput.value;
+    
+                if (!fechaIngreso || !fechaSalida) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Por favor selecciona fechas de ingreso y salida válidas.',
+                    });
+                    return;
+                }
+    
+                if (new Date(fechaSalida) <= new Date(fechaIngreso)) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'La fecha de salida debe ser posterior a la fecha de ingreso.',
+                    });
+                    return;
+                }
+    
+                if (numAdultos + numNinos > capacidad) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'El número total de personas excede la capacidad de la habitación seleccionada.',
+                    });
+                }
+            });
+        });
+    </script>
+    
+    <div class="row">
+        <div class="col-lg-4 col-md-12 px-4 d-flex align-items-center justify-content-center ">
+            <div class="card mt-4 " style="width: 18rem;">
+               
+                <div class="card-body text-center">
+                    <div  class="profile-icon ">
+                        <i  class="fas fa-hotel text-primary " ></i>
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title mt-3">{{alojamiento.nombre}}</h5>
+                        <p class="card-text"><i class="fas fa-map-marker-alt"></i> {{alojamiento.direccion}}</p>
+                        <p class="card-text"><i class="fas fa-phone"></i> {{alojamiento.celular}}</p>
+                        <p class="card-text"><i class="fas fa-envelope"></i> {{alojamiento.email}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8 col-md-12 px-4">
+            <div class="card mt-4">
+                <div class="card-header">
+                  TIPOS DE HABITACIONES
+                </div>
+                <div class="card">
+                  <div class="card-body">
+                    <table class="table table-bordered" id="tabla-alojamiento">
+                      <thead class="table text-center">
+                        <tr>
+                          <th >Categoría</th>
+                          <th>Nº de camas</th>
+                          <th>Capacidad</th>
+                          <th >Precio por noche</th>
+                         
+                        </tr>
+                      </thead>
+                      <tbody class="text-center">
+                        <tr >
+                            {% for r in alojamiento.alojamiento_habitaciones_tipos%}
+                                <td>{{r.tipo}}</td>
+                                <td>{{r.numero_camas}}
+                                    <i class="fa-solid fa-bed"></i>
+                                </td>
+                                <td>{{r.capacidad}} 
+                                    personas
+                                </td>
+                                <td><span class="badge bg-success text-secondary">${{r.precio}}</span>
+                                    <br>
+                                    <a href="{% url 'alojamiento:tipos_alojamiento_detalle' r.alojamiento.pk r.pk %}">
+                                        <span class="mt-2 small">VER HABITACIONES</span>
+                                    </a>
+                                    
+                                    
+                                </td>
+                                </tr>
+                            {%endfor%}
+                      </tbody>
+                    </table>
+                  </div>
+              
+                  
+                </div>
+              </div>
+              
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#tabla-alojamiento").DataTable({
+      responsive: true,
+      "pageLength": 5,
+      "searching": false,
+      "lengthChange": false,
+      language: {
+        decimal: "",
+        emptyTable: "No hay información",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+        infoEmpty: "Mostrando 0 to 0 of 0 Entradas",
+        infoFiltered: "(Filtrado de _MAX_ total entradas)",
+        infoPostFix: "",
+        thousands: ",",
+        lengthMenu: "Mostrar _MENU_ Entradas",
+        loadingRecords: "Cargando...",
+        processing: "Procesando...",
+        search: "Buscar:",
+        zeroRecords: "Sin resultados encontrados",
+        paginate: {
+          first: "Primero",
+          last: "Ultimo",
+          next: "Siguiente",
+          previous: "Anterior",
+        },
+      },
+    });
+    </script>
+{% endblock %}
+

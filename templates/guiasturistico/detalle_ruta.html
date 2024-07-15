@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 my-5 mb-4 px-4">
+            <h2 class="fw-bold">CONFIRMAR RESERVACIÓN</h2>
+            <div style="font-size: 14px">
+                <a href="" class="text-secondary text-decoration-none text-black-50">Inicio</a>
+                <span class="text-secondary"> > </span>
+                <a href="" class="text-secondary text-decoration-none text-black-50">Actividades</a>
+                <span class="text-secondary"> > </span>
+                <span class="text-secondary">Confirmar</span>
+            </div>
+        </div>
+
+        <div class="col-lg-7 col-md-12 px-4" style="margin-top: -1cm;">
+            <div class="text-center">
+                <h4> Actividad {{ ruta.nombre }}</h4>
+            </div>
+            <div class="card p-3 shadow-sm rounded">
+                <img src="{{ ruta.imagen.url }}" class="card-img-top px-2 fixed-size" alt="Imagen de la ruta" />
+                <h5 class="mt-2 text-center">Precio: ${{ ruta.precio }} Por Persona</h5>
+                <div class="d-flex justify-content-between small">
+                    <div class="d-flex align-items-center"><i class="fa-solid fa-map-pin mr-2"></i>Ruta:</div>
+                    <div>{{ ruta.nombre }}</div>
+                </div>
+                <div class="small d-flex justify-content-between mt-2">
+                    <div><i class="fa-solid fa-person-hiking mr-2" style="color: #0953d3;"></i>Capacidad:</div>
+                    <div>{{ ruta.capacidad }} personas</div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://js.stripe.com/v3/"></script>
+
+        <div class="col-lg-5 col-md-12 px-4">
+            <div class="card mb-4 border-0 shadow-sm rounded-3">
+                <div class="card-body">
+                    <form id="booking_form" method="POST">
+                        {% csrf_token %}
+                        <h6 class="mb-3">Detalles de la reservación</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label mb-1">Nombre</label>
+                                <input name="name" type="text" class="form-control shadow-none" required>
+                            </div>
+                            <div class="col-md-6 mb-3" style="margin-top: -5px;">
+                                <label class="form-label">Número de teléfono</label>
+                                <input name="phonenum" type="tel" class="form-control shadow-none" required maxlength="10" pattern="\d{10}">
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Dirección</label>
+                                <textarea name="address" class="form-control shadow-none" rows="1" required></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Número de personas</label>
+                                <input name="num_person" id="num_person" type="number" class="form-control shadow-none"
+                                    min="1" max="{{ ruta.capacidad }}" required onchange="calculateTotal()" oninput="calculateTotal()">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Fecha</label>
+                                <input name="fecha" type="date" class="form-control shadow-none"
+                                    min="{{ fecha_actual|date:'Y-m-d' }}" value="{{ fecha_actual|date:'Y-m-d' }}"
+                                    required>
+                                <script>
+                                    var today = new Date();
+                                    today.setDate(today.getDate() + 2); // Añadir 2 días a la fecha actual
+                                    var minDate = today.toISOString().split('T')[0];
+                                    document.getElementsByName('fecha')[0].setAttribute('min', minDate);
+                                </script>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div id="date-error" class="text-danger mb-3"></div>
+                                <h6>Total a pagar: $<span id="totalPrice">0.00</span></h6>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn w-100 text-white custom-bg shadow-none mb-1 bg-dark"
+                                    id="submitBtn">
+                                    Pagar Ahora
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var precioPorPersona = parseFloat("{{ ruta.precio }}");
+    var capacidadMaxima = parseInt("{{ ruta.capacidad }}");
+
+    function calculateTotal() {
+        var numPersonas = parseInt(document.getElementById('num_person').value) || 0;
+        if (numPersonas > capacidadMaxima) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Excede la capacidad',
+                text: `El número máximo de personas permitidas es ${capacidadMaxima}.`
+            });
+            document.getElementById('num_person').value = capacidadMaxima;
+            numPersonas = capacidadMaxima;
+        }
+        var total = precioPorPersona * numPersonas;
+        document.getElementById('totalPrice').innerText = total.toFixed(2);
+    }
+    document.getElementById("booking_form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        fetchCheckoutSession();
+    });
+
+    async function fetchCheckoutSession() {
+        
+            
+        const response = await fetch("{% url 'reservacion:create_checkout_session_2' %}", {
+          
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: JSON.stringify({
+                product_name: "{{ ruta.nombre }}",
+                product_image: document.querySelector("img").src,
+                amount: parseFloat(precioPorPersona) * 100,  // Convertir a centavos
+                fecha: document.querySelector("input[name='fecha']").value,
+                num_person: document.querySelector("input[name='num_person']").value,
+                name: document.querySelector("input[name='name']").value,
+                ruta_id: "{{ ruta.id }}",
+            }),
+        });
+
+        const session = await response.json();
+
+        if (response.ok) {
+            window.location.href = session.url;
+        } else {
+            console.error(session.error);
+        }
+    }
+</script>
+
+{% endblock %}
