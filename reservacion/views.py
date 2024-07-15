@@ -199,7 +199,11 @@ def payment_success(request):
     num_adultos = session.metadata.num_adultos
     num_ninos = session.metadata.num_ninos
     pago_id = session.payment_intent
-
+    
+    
+    habitacion_id = json.loads(session.metadata.habitacion_ids)  # Asumiendo que solo hay una habitación
+    
+    
     # Crear el objeto Reservacion
     reservacion = Reservacion.objects.create(
         user_id=user_id,
@@ -214,6 +218,9 @@ def payment_success(request):
         estado=True,
         pago_id=pago_id
     )
+    
+    
+    actualizar_disponibilidad_habitacion(habitacion_id)
 
     # Añadir las habitaciones
     reservacion.habitacion.add(habitacion_ids)
@@ -225,6 +232,18 @@ def payment_success(request):
     enviar_correo_reservacion(user, reservacion, 'alojamiento')
 
     return render(request, 'reservacion/success.html')
+
+def actualizar_disponibilidad_habitacion(habitacion_id):
+    try:
+        habitacion = get_object_or_404(Habitacion, id=habitacion_id)
+        habitacion.disponible = False
+        habitacion.save()
+        print(f"Disponibilidad de la habitación {habitacion_id} actualizada a False")
+        return True
+    except Exception as e:
+        print(f"Error al actualizar la disponibilidad de la habitación {habitacion_id}: {str(e)}")
+        return False
+
 
 
 def payment_cancel(request):
@@ -310,6 +329,8 @@ def payment_success_2(request):
         total=total,
         pago_id=pago_id
     )
+    guia.estado = "Reservado"
+    guia.save()
 
     # Enviar correo de confirmación
     enviar_correo_reservacion(user, reservacion, 'guia')
