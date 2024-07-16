@@ -51,11 +51,11 @@ def habitacion_disponible(request):
                           alojamiento.pk, alojamiento_tipo_obj.pk])
 
             # Redirigir a la URL con los parámetros necesarios
-            url_params = f"{url}?alojamiento-id={id}&fecha_ingreso={fecha_ingreso}&fecha_salida={
-                fecha_salida}&num_adultos={num_adultos}&num_ninos={num_ninos}&alojamiento_tipo={alojamiento_tipo_obj.pk}"
+            url_params = f"{url}?alojamiento-id={id}&fecha_ingreso={fecha_ingreso}&fecha_salida={fecha_salida}&num_adultos={num_adultos}&num_ninos={num_ninos}&alojamiento_tipo={alojamiento_tipo_obj.pk}"
             return HttpResponseRedirect(url_params)
         except Exception as e:
             print(f"Error al construir la URL: {str(e)}")
+
 
 
 def add_selecion(request):
@@ -96,7 +96,6 @@ def add_selecion(request):
 
     }
     return JsonResponse(data)
-
 
 def mi_reserva(request):
     habitacion_id = request.GET.get('habitacion_id')
@@ -139,14 +138,12 @@ def create_payment(request):
             return JsonResponse({'error': str(e)}, status=403)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
-
 @csrf_exempt
 def create_checkout_session(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            product_image_url = f"{settings.DOMAIN}{
-                data['product_image']}"  # verificar si es necesario
+            product_image_url = f"{settings.DOMAIN}{data['product_image']}"  # verificar si es necesario
             checkout_session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
                 line_items=[
@@ -163,11 +160,9 @@ def create_checkout_session(request):
                     },
                 ],
                 mode='payment',
-                success_url=f"{
-                    settings.DOMAIN}/reservacion/payment-success/?session_id={{CHECKOUT_SESSION_ID}}",
+                success_url=f"{settings.DOMAIN}/reservacion/payment-success/?session_id={{CHECKOUT_SESSION_ID}}",
                 cancel_url=f"{settings.DOMAIN}/reservacion/payment-cancel/",
                 metadata={
-                    # asumiendo que el usuario está autenticado
                     'user_id': str(request.user.id),
                     'alojamiento_id': str(data['alojamiento_id']),
                     'habitacion_tipo_id': str(data['habitacion_tipo_id']),
@@ -250,23 +245,22 @@ def payment_cancel(request):
     return render(request, 'reservacion/cancel.html')
 
 
+
 @csrf_exempt
 def create_checkout_session_2(request):
-    print("Request method:", request.method)  # Check request method
+    print("Request method:", request.method)
     if request.user.is_authenticated:
-        print("User ID:", request.user.id)  # Confirm user is authenticated
+        print("User ID:", request.user.id)
     else:
         print("User not authenticated")
 
     if request.method == 'POST':
         data = json.loads(request.body)
-        print("Received data:", data)  # Inspect received data
+        print("Received data:", data)
         if 'ruta_id' not in data:
-            # Check for 'ruta_id'
             return JsonResponse({'error': 'Missing ruta_id'}, status=400)
-    if request.method == 'POST':
+
         try:
-            data = json.loads(request.body)
             product_image_url = f"{settings.DOMAIN}{data['product_image']}"
             checkout_session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
@@ -284,9 +278,7 @@ def create_checkout_session_2(request):
                     },
                 ],
                 mode='payment',
-                success_url=f"{
-                    settings.DOMAIN}/reservacion/payment-success-2/?session_id={{CHECKOUT_SESSION_ID}}",
-                # cambiar a la URL correcta
+                success_url=f"{settings.DOMAIN}/reservacion/payment-success-2/?session_id={{CHECKOUT_SESSION_ID}}",
                 cancel_url=f"{settings.DOMAIN}/reservacion/payment-cancel/",
                 metadata={
                     'user_id': str(request.user.id),
@@ -300,6 +292,7 @@ def create_checkout_session_2(request):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=403)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
+
 
 
 def payment_success_2(request):
