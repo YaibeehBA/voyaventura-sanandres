@@ -45,13 +45,13 @@ INSTALLED_APPS = [
     'crispy_forms',
     'ckeditor_uploader',
     'django_ckeditor_5',
-    "whitenoise.runserver_nostatic",
+    
    
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+   
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -62,8 +62,6 @@ MIDDLEWARE = [
     
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-WHITENOISE_IGNORE = ['*.map']
 
 ROOT_URLCONF = 'san_andres.urls'
 
@@ -89,24 +87,24 @@ WSGI_APPLICATION = 'san_andres.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
-    "default":
-        {
-            "ENGINE": "django.db.backends.postgresql_psycopg2",
-            "NAME": env("DB_NAME"),
-            "USER": env("DB_USER"),
-            "PASSWORD": env("DB_PASSWORD"),
-            "HOST": env("DB_HOST"),
-            "PORT": env("DB_PORT")
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
+
+# DATABASES = {
+#     "default":
+#         {
+#             "ENGINE": "django.db.backends.postgresql_psycopg2",
+#             "NAME": env("DB_NAME"),
+#             "USER": env("DB_USER"),
+#             "PASSWORD": env("DB_PASSWORD"),
+#             "HOST": env("DB_HOST"),
+#             "PORT": env("DB_PORT")
+#         }
+# }
 
 
 # Password validation
