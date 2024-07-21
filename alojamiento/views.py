@@ -154,7 +154,21 @@ def webhook(request):
         print(f"Error en webhook: {str(e)}")
         return JsonResponse({'fulfillmentText': 'Ocurrió un error procesando la solicitud.'})
 
+import time
+from functools import wraps
 
+def medir_tiempo(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        inicio = time.time()
+        resultado = func(*args, **kwargs)
+        fin = time.time()
+        tiempo_transcurrido = fin - inicio
+        print(f"Tiempo de {func.__name__}: {tiempo_transcurrido} segundos")
+        return resultado
+    return wrapper
+
+@medir_tiempo
 def get_info_alojamiento(request, nombre_alojamiento):
     try:
         alojamiento = Alojamiento.objects.filter(
@@ -219,6 +233,7 @@ def get_info_alojamiento(request, nombre_alojamiento):
 
     return JsonResponse(response)
 
+@medir_tiempo
 def get_alojamiento(request):
     alojamientos = Alojamiento.objects.filter(estado="Aprobado")
     
@@ -263,7 +278,7 @@ def get_alojamiento(request):
 
     return JsonResponse(response)
 
-
+@medir_tiempo
 def get_guias(request):
     guias = GuiaTuristico.objects.filter( Q(estado="Aprobado") | Q(estado="Disponible"))
 
@@ -308,7 +323,7 @@ def get_guias(request):
 
     return JsonResponse(response)
 
-
+@medir_tiempo
 def get_info_guia(request, nombre_guia):
     try:
         guia = GuiaTuristico.objects.filter(
@@ -379,7 +394,7 @@ def get_info_guia(request, nombre_guia):
 
 # -----------------------------open ai------------------------------------------
 from openai import OpenAI
-
+@medir_tiempo
 def responder_pregunta_especifica(request, body):
     pregunta = body['queryResult']['queryText']
     

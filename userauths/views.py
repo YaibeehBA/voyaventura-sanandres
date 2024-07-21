@@ -7,8 +7,21 @@ from userauths.models import Usuario
 from userauths.forms import UsuarioRegistradoForm, CustomPasswordResetForm
 
 
+import time
+from functools import wraps
 
+def medir_tiempo(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        inicio = time.time()
+        resultado = func(*args, **kwargs)
+        fin = time.time()
+        tiempo_transcurrido = fin - inicio
+        print(f"Tiempo de {func.__name__}: {tiempo_transcurrido} segundos")
+        return resultado
+    return wrapper
 
+@medir_tiempo
 def RegistrarVista(request):
     if request.user.is_authenticated:
         messages.warning(request, "Ya has iniciado sesión")
@@ -42,7 +55,7 @@ def RegistrarVista(request):
     }
     return render(request, "userauths/sign-up.html", context)
 
-
+@medir_tiempo
 def LoginVista(request):
 
     if request.user.is_authenticated:

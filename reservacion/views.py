@@ -13,7 +13,7 @@ from django.shortcuts import render, get_object_or_404
 from alojamiento.models import Reservacion
 from guias.models import ReservacionGuia, Ruta
 from userauths.models import Usuario
-from .utils import enviar_correo_reservacion
+from .utils import enviar_correo_reservacion, medir_tiempo
 
 from django.http import HttpResponse
 
@@ -178,7 +178,7 @@ def create_checkout_session(request):
             return JsonResponse({'error': str(e)}, status=403)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
-
+@medir_tiempo
 def payment_success(request):
     session_id = request.GET.get('session_id')
     session = stripe.checkout.Session.retrieve(session_id)
