@@ -19,12 +19,16 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*",
-                 "9956-190-152-163-241.ngrok-free.app",
-                 "voyaventura-san-andres.up.railway.app"
-                 ]
+ALLOWED_HOSTS = [
+    'voyaventura-san-andres.up.railway.app',
+    'localhost',
+    '127.0.0.1',
+]
 
-CSRF_TRUSTED_ORIGINS = ['https://voyaventura-san-andres.up.railway.app/']
+CSRF_TRUSTED_ORIGINS = [
+    'https://voyaventura-san-andres.up.railway.app',
+]
+
 # Application definition
 
 INSTALLED_APPS = [
