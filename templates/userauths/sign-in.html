@@ -1,283 +1,249 @@
 {% extends 'base.html' %} {% load static %} {% block content %}
 
-<!-- inicio register -->
 
-<style>
-        
+    <style>
+            
 
-.container {
-    position: relative;
-    width:100%;
-    background: #fff;
-    display: flex;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-}
-.container::before,
-.container::after {
-    content: "";
-    position: absolute;
-    bottom: 15px;
-    width: 50%;
-    height: 100px;
-    background: rgba(0, 0, 0, 0.2);
-    filter: blur(5px);
-    z-index: -1;
-}
-.container::before {
-    left: 10px;
-    transform-origin: right;
-    transform: skewY(-7deg);
-}
-.container::after {
-    right: 10px;
-    transform-origin: left;
-    transform: skewY(7deg);
-}
-
-.box {
-    position: relative;
-    width: 100%;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-   
-}
+    .container {
+        position: relative;
+        width:100%;
+        background: #fff;
+        display: flex;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
 
 
-form {
-    padding: 30px;
-}
 
-
-.icon-box {
-    margin-top: 20px;
-    position: relative;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    overflow: hidden;
-}
-
-
-.input-group {
-    width: 100%;
-    position: relative;
-    display: flex;
-    margin-bottom: 30px;
-}
-.input-group:last-child {
-    margin: 0;
-}
-.input-group .input-box {
-    width: 100%;
-    position: relative;
-}
-.input-group .input-box label.placeholder {
-    position: absolute;
-    top: 10px;
-    left: 34px;
-    transition: 0.3s;
-    color: #aaa;
-    cursor: text;
-    font-size: 15px;
-}
-.input-group .input-box .input-field {
-    width: 100%;
-    height: 42px;
-    padding: 0 36px 0 5px;
-    text-indent: 28px;
-    border: none;
-    outline: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-    transition: 0.3s;
-}
-.input-group .input-box .input-field:focus {
-    border-bottom-color: #67b26f;
-}
-.input-group .input-box .input-field:focus + label.placeholder,
-.input-group .input-box .input-field:valid + label.placeholder {
-    top: -15px;
-    left: 0;
-    font-size: 14px;
-    color: #67b26f;
-}
-.input-group .input-box > i {
-    width: 32px;
-    height: 42px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 0;
-    color: #888;
-    font-size: 18px;
-    transition: 0.3s;
-}
-.input-group .input-box > i.left-icon {
-    left: 0;
-}
-.input-group .input-box > i.right-icon {
-    right: 0;
-    cursor: pointer;
-}
-.input-group .input-box .input-field:focus ~ i.left-icon {
-    color: #67b26f;
-}
-
-.input-group .input-box label.check-label {
-    position: relative;
-    padding: 8px 8px 10px 38px;
-    margin-right: 8px;
-    cursor: pointer;
-    font-size: 15px;
-    user-select: none;
-    color: #666;
-}
-.input-group .input-box label.check-label:last-child {
-    margin: 0;
-}
-.input-group .input-box label.check-label input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-}
-.input-group .input-box label.check-label input[type="checkbox"]::before {
-    content: "";
-    position: absolute;
-    background: #fff;
-    top: 6px;
-    left: 0px;
-    width: 24px;
-    height: 24px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-}
-.input-group
-    .input-box
-    label.check-label
-    input[type="checkbox"]:checked::after {
-    content: "";
-    position: absolute;
-    top: 12px;
-    left: 6px;
-    width: 14px;
-    height: 14px;
-    background: #67b26f;
-}
-
-.input-group .input-box button {
-    width: 100%;
-    height: 42px;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    font-size: 16px;
-    color: #fff;
-    transition: 0.3s;
-    background: #67b26f;
-    background: -webkit-linear-gradient(-135deg, #1fddff, #67b26f);
-    background: linear-gradient(-135deg, #1fddff, #67b26f);
-}
-.input-group .input-box button:hover {
-    background: #67b26f;
-    background: -webkit-linear-gradient(-135deg, #1fddff, #67b26f);
-    background: linear-gradient(135deg, #1fddff, #67b26f);
-}
-
-.input-group .input-box span {
-    text-align: center;
-    display: block;
-    width: 100%;
-    color: #666;
-    font-size: 14px;
-}
-.input-group .input-box span a {
-    cursor: pointer;
-    text-decoration: none;
-    color: dodgerblue;
-}
-.input-group .input-box span a:hover {
-    text-decoration: underline;
-}
-
-</style>
-<div class="container-fluid  mt-4 ">
-
-   
-  <div class="container ">
-    <div class="box" >
-        <div class="bg-danger">
-            <img class="position-absolute w-100 h-100" src="{% static 'img/chimborazo.jpg' %}" style="object-fit: cover;" />
-        </div>
-    </div>
+    .box {
+        position: relative;
+        width: 100%;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
     
+    }
 
-    <div class="box mb-3">
-      
-      <h6 class="text-primary text-uppercase text-center mt-4" style="letter-spacing: 5px;">INICIAR SESSION</h6>
 
-      <form method="post" class="register">
-        {% csrf_token %}
-        <div class="input-group">
-          <div class="input-box">
-            <input class="input-field" type="email" name="email" id="email" required />
-            <label class="placeholder" for="user-name">Ingrese su correo electrónico</label>
-            <i class="fas left-icon fa-user"></i>
-          </div>
+    form {
+        padding: 30px;
+    }
+
+
+
+
+    .input-group {
+        width: 100%;
+        position: relative;
+        display: flex;
+        margin-bottom: 30px;
+    }
+    .input-group:last-child {
+        margin: 0;
+    }
+    .input-group .input-box {
+        width: 100%;
+        position: relative;
+    }
+    .input-group .input-box label.placeholder {
+        position: absolute;
+        top: 10px;
+        left: 34px;
+        transition: 0.3s;
+        color: #aaa;
+        cursor: text;
+        font-size: 15px;
+    }
+    .input-group .input-box .input-field {
+        width: 100%;
+        height: 42px;
+        padding: 0 36px 0 5px;
+        text-indent: 28px;
+        border: none;
+        outline: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+        transition: 0.3s;
+    }
+    .input-group .input-box .input-field:focus {
+        border-bottom-color: #67b26f;
+    }
+    .input-group .input-box .input-field:focus + label.placeholder,
+    .input-group .input-box .input-field:valid + label.placeholder {
+        top: -15px;
+        left: 0;
+        font-size: 14px;
+        color: #67b26f;
+    }
+    .input-group .input-box > i {
+        width: 32px;
+        height: 42px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        color: #888;
+        font-size: 18px;
+        transition: 0.3s;
+    }
+    .input-group .input-box > i.left-icon {
+        left: 0;
+    }
+    .input-group .input-box > i.right-icon {
+        right: 0;
+        cursor: pointer;
+    }
+    .input-group .input-box .input-field:focus ~ i.left-icon {
+        color: #67b26f;
+    }
+
+    .input-group .input-box label.check-label {
+        position: relative;
+        padding: 8px 8px 10px 38px;
+        margin-right: 8px;
+        cursor: pointer;
+        font-size: 15px;
+        user-select: none;
+        color: #666;
+    }
+    .input-group .input-box label.check-label:last-child {
+        margin: 0;
+    }
+    .input-group .input-box label.check-label input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+    }
+    .input-group .input-box label.check-label input[type="checkbox"]::before {
+        content: "";
+        position: absolute;
+        background: #fff;
+        top: 6px;
+        left: 0px;
+        width: 24px;
+        height: 24px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+    }
+    .input-group
+        .input-box
+        label.check-label
+        input[type="checkbox"]:checked::after {
+        content: "";
+        position: absolute;
+        top: 12px;
+        left: 6px;
+        width: 14px;
+        height: 14px;
+        background: #67b26f;
+    }
+
+    .input-group .input-box button {
+        width: 100%;
+        height: 42px;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 16px;
+        color: #fff;
+        transition: 0.3s;
+        background: #67b26f;
+        background: -webkit-linear-gradient(-135deg, #1fddff, #67b26f);
+        background: linear-gradient(-135deg, #1fddff, #67b26f);
+    }
+    .input-group .input-box button:hover {
+        background: #67b26f;
+        background: -webkit-linear-gradient(-135deg, #1fddff, #67b26f);
+        background: linear-gradient(135deg, #1fddff, #67b26f);
+    }
+
+    .input-group .input-box span {
+        text-align: center;
+        display: block;
+        width: 100%;
+        color: #666;
+        font-size: 14px;
+    }
+    .input-group .input-box span a {
+        cursor: pointer;
+        text-decoration: none;
+        color: dodgerblue;
+    }
+    .input-group .input-box span a:hover {
+        text-decoration: underline;
+    }
+
+    </style>
+
+<div class="card mb-3 container-fluid" style="max-width: 940px; margin-top: 2.5cm;">
+    <div class="row g-0">
+        <div class="col-md-6" style="margin-top: 0.6cm;">
+            <img src="{% static 'img/chimborazo.jpg' %}" class="img-fluid rounded-start" style="border-radius: 0.5cm;" />
         </div>
 
-        <div class="input-group">
-          <div class="input-box">
-            <input class="input-field" type="password" name="password" id="password" required />
-            <label class="placeholder" for="password">Ingrese su contraseña</label>
-            <i class="fas left-icon fa-lock"></i>
-            <i class="fas right-icon fa-eye" id="show-pass"></i>
-            <i class="fas right-icon fa-eye-slash" id="hide-pass"></i>
-          </div>
-        </div>
+        <div class="col-md-6">
+            <div class="card-body">
+                <h6 class="text-primary text-uppercase text-center mt-4" style="letter-spacing: 5px;">INICIAR SESSION</h6>
+                <form method="post" class="register">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <div class="input-box">
+                            <input class="input-field" type="email" name="email" id="email" required />
+                            <label class="placeholder" for="user-name">Ingrese su correo electrónico</label>
+                            <i class="fas left-icon fa-user"></i>
+                        </div>
+                    </div>
 
-       
+                    <div class="input-group">
+                        <div class="input-box">
+                            <input class="input-field" type="password" name="password" id="password" required />
+                            <label class="placeholder" for="password">Ingrese su contraseña</label>
+                            <i class="fas left-icon fa-lock"></i>
+                            <i class="fas right-icon fa-eye" id="show-pass"></i>
+                            <i class="fas right-icon fa-eye-slash" id="hide-pass"></i>
+                        </div>
+                    </div>
 
-        <div class="input-group">
-          <div class="input-box">
-            <button type="submit">Iniciar session <i class="fas fa-sign-in-alt"></i></button>
-          </div>
-        </div>
+                    <div class="input-group">
+                        <div class="input-box">
+                            <button type="submit">Iniciar session <i class="fas fa-sign-in-alt"></i></button>
+                        </div>
+                    </div>
 
-        <div class="input-group">
-          <div class="input-box">
-           
-            <span> <a href="{% url 'userauths:password_reset' %}">Olvidé mi contraseña?</a></span>
-          </div>
+                    <div class="input-group">
+                        <div class="input-box">
+                            <span> <a href="{% url 'userauths:password_reset' %}">Olvidé mi contraseña?</a></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-      </form>
     </div>
-  </div>
-
- <script>
-    $("document").ready(function () {
-    var showPass = $("#show-pass");
-    var hidePass = $("#hide-pass");
-    var password = $("#password");
-    hidePass.hide();
-
-    $(showPass).click(function (e) {
-        e.preventDefault();
-        password.attr("type", "text");
-        password.focus();
-        showPass.hide();
-        hidePass.show();
-    });
-    $(hidePass).click(function (e) {
-        e.preventDefault();
-        password.attr("type", "password");
-        password.focus();
-        hidePass.hide();
-        showPass.show();
-    });
-});
-
- </script>
-
+    <br />
 </div>
+
+    
+    <script>
+        $("document").ready(function () {
+        var showPass = $("#show-pass");
+        var hidePass = $("#hide-pass");
+        var password = $("#password");
+        hidePass.hide();
+
+        $(showPass).click(function (e) {
+            e.preventDefault();
+            password.attr("type", "text");
+            password.focus();
+            showPass.hide();
+            hidePass.show();
+        });
+        $(hidePass).click(function (e) {
+            e.preventDefault();
+            password.attr("type", "password");
+            password.focus();
+            hidePass.hide();
+            showPass.show();
+        });
+    });
+
+    </script>
 
 
 {% endblock %}

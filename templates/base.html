@@ -6,31 +6,31 @@
     <meta charset="utf-8" />
     <title>San Andres</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <meta content="Free HTML Templates" name="keywords" />
-    <meta content="Free HTML Templates" name="description" />
+   
 
     <!-- Favicon -->
 
-
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Merienda:wght@400;700&family=Poppins:wght@400;500;600&display=swap"
-        rel="stylesheet">
-
+    <link rel="icon" href="{% static 'img/viajar.png' %}" type="image/x-icon">
+   
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <!-- Libraries Stylesheet -->
-    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet" />
-  
+   
     <!-- alert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <!-- Customized Bootstrap Stylesheet -->
     
     <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.css"/>
+ 
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/js/bootstrap.bundle.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.9/js/responsive.bootstrap5.js"></script>
+
 </head>
 
 <body>
@@ -55,7 +55,7 @@
                         {% if user.is_authenticated %}
                             <a href="{% url 'reservacion:mis_reservas' %}" class="nav-item nav-link">Mis reservas</a>
                         {% endif %}
-                        <a href="contact.html" class="nav-item nav-link">Contáctanos</a>
+                        <!-- <a href="contact.html" class="nav-item nav-link">Contáctanos</a> -->
                     </div>
                     <div class="navbar-nav ml-2">
                         {% if user.is_authenticated %}
@@ -70,8 +70,10 @@
                                 </div>
                             </div>
                         {% else %}
-                            <a href="{% url 'userauths:sign-in' %}" class="btn btn-primary shadow-none me-lg-3 me-2 mx-2 ">Iniciar Sesión</a>
-                            <a href="{% url 'userauths:sign-up' %}" class="btn btn-primary shadow-none  ">Registrarse</a>
+                        <div class="d-flex flex-wrap">
+                            <a href="{% url 'userauths:sign-in' %}" class="btn btn-primary shadow-none me-2 mb-2" style="margin-right: 10px;">Iniciar Sesión</a>
+                            <a href="{% url 'userauths:sign-up' %}" class="btn btn-primary shadow-none mb-2">Registrarse</a>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
@@ -155,12 +157,11 @@
     ></df-messenger>
    
     <!-- JavaScript Libraries -->
-
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    
-
-    <!-- Template Javascript -->
+    <script src="/static/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
     <script src="/static/js/main.js"></script>
+    <script src="/static/js/custom.js"></script>
+   
    
 </body>
 
