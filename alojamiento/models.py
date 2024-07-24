@@ -38,7 +38,7 @@ class Alojamiento(models.Model):
     ]
 )
     email = models.EmailField(validators=[EmailValidator(message='Correo electrónico no válido.')], unique=True)
-    descripcion = models.TextField(null=True, blank= True)
+    descripcion = models.TextField(null=False, blank= False)
     imagen = models.FileField(upload_to="alojamiento_galeria", validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png','webp'])])
     direccion = models.CharField(max_length=200)
     celular = models.CharField(
@@ -89,8 +89,7 @@ class TipoAlojamiento(models.Model):
     tipo = models.CharField(max_length=1000)
     precio = models.DecimalField(max_digits=12, decimal_places=2, default=0.00,validators=[MinValueValidator(0)])
     imagen_1 = models.FileField(upload_to="galeria_tipo_alojamiento", null=False, blank=False)
-    imagen_2= models.FileField(upload_to="galeria_tipo_alojamiento",null=True, blank=True)
-    imagen_3 = models.FileField(upload_to="galeria_tipo_alojamiento", null=True, blank=True)
+   
     numero_camas = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0)])
     capacidad = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0)])
   

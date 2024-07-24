@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
 import json
 from alojamiento.models import Alojamiento,TipoAlojamiento,GaleriaAlojamiento ,Habitacion, Reservacion
 from guias.models import GuiaTuristico, Ruta
@@ -10,6 +9,7 @@ from django.db.models import Q, Min, Max, Count
 from django.contrib import messages
 from django.urls import reverse
 from django.core.paginator import Paginator
+from userauths.models import MensajeUsuario
 
 from san_andres import settings
 import openai
@@ -133,8 +133,10 @@ def webhook(request):
         # Punto de interrupción para inspeccionar la acción y el evento
         print(f"Action: {action}, Event: {event}")
         
-
-        if action == 'get_alojamiento':
+        
+        if action == 'input.welcome':
+            return bienvenida(request) 
+        elif action == 'get_alojamiento':
             return get_alojamiento(request)
         elif action == 'info_alojamiento' or event == 'detalle_alojamiento':
             nombre_alojamiento = parameters.get('alojamiento')
@@ -148,11 +150,21 @@ def webhook(request):
             return get_info_guia(request, nombre_guia)
         elif action == 'responder_pregunta' :
              return responder_pregunta_especifica(request, body)
+        elif action == 'capturar_mensaje_usuario':
+            return capturar_mensaje_usuario(request, parameters)
+        
+        elif action == 'capturar_precio':
+            return capturar_precio(request, parameters)
+       
+
+        elif action == 'mostrar_menu':
+            return mostrar_menu(request)
         else:
             return JsonResponse({'fulfillmentText': 'No se pudo procesar la acción solicitada.'})
     except Exception as e:
         print(f"Error en webhook: {str(e)}")
         return JsonResponse({'fulfillmentText': 'Ocurrió un error procesando la solicitud.'})
+    # https://voyaventura-san-andres.up.railway.app/webhook/
 
 import time
 from functools import wraps
@@ -168,7 +180,74 @@ def medir_tiempo(func):
         return resultado
     return wrapper
 
-@medir_tiempo
+# @medir_tiempo
+# def get_info_alojamiento(request, nombre_alojamiento):
+#     try:
+#         alojamiento = Alojamiento.objects.filter(
+#             Q(nombre__icontains=nombre_alojamiento) & Q(estado="Aprobado")
+#         ).first()
+        
+#         if alojamiento:
+#             print(f"Alojamiento encontrado: {alojamiento.nombre}")
+#             response = {
+#                 "fulfillmentMessages": [
+#                     {
+#                         "payload": {
+#                             "richContent": [
+#                                 [
+#                                     {
+#                                         "type": "info",
+#                                         "title": alojamiento.nombre,
+#                                         "subtitle": f"Dirección: {alojamiento.direccion}",
+#                                         "image": {
+#                                             "src": {
+#                                                 "rawUrl": request.build_absolute_uri(alojamiento.imagen.url)
+#                                             }
+#                                         },
+#                                         "actionLink": f"{settings.DOMAIN}/detalle/{alojamiento.id}"
+#                                     }
+#                                 ]
+#                             ]
+#                         }
+#                     },
+#                     {
+#                         "text": {
+#                             "text": [
+#                                 f"Teléfono: {alojamiento.celular}",
+#                                 f"Descripción: {alojamiento.descripcion}"
+#                             ]
+#                         }
+#                     }
+#                 ]
+#             }
+#         else:
+#             print(f"No se encontró alojamiento para: {nombre_alojamiento}")
+#             response = {
+#                 "fulfillmentMessages": [
+#                     {
+#                         "text": {
+#                             "text": ["Lo siento, no pude encontrar información sobre ese alojamiento."]
+#                         }
+#                     }
+#                 ]
+#             }
+#     except Exception as e:
+#         print(f"Error en get_info_alojamiento: {str(e)}")
+#         response = {
+#             "fulfillmentMessages": [
+#                 {
+#                     "text": {
+#                         "text": ["Ocurrió un error al buscar la información del alojamiento."]
+#                     }
+#                 }
+#             ]
+#         }
+
+    
+    
+#     return JsonResponse(response)
+
+
 def get_info_alojamiento(request, nombre_alojamiento):
     try:
         alojamiento = Alojamiento.objects.filter(
@@ -205,6 +284,23 @@ def get_info_alojamiento(request, nombre_alojamiento):
                                 f"Descripción: {alojamiento.descripcion}"
                             ]
                         }
+                    },
+                    {
+                        "payload": {
+                            "richContent": [
+                                [
+                                    {
+                                        "type": "chips",
+                                        "options": [
+                                            {
+                                                "text": "Volver al Menú Principal",
+                                                "postback": "mostrar_menu"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            ]
+                        }
                     }
                 ]
             }
@@ -215,6 +311,23 @@ def get_info_alojamiento(request, nombre_alojamiento):
                     {
                         "text": {
                             "text": ["Lo siento, no pude encontrar información sobre ese alojamiento."]
+                        }
+                    },
+                    {
+                        "payload": {
+                            "richContent": [
+                                [
+                                    {
+                                        "type": "chips",
+                                        "options": [
+                                            {
+                                                "text": "Volver al Menú Principal",
+                                                "postback": "mostrar_menu"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            ]
                         }
                     }
                 ]
@@ -227,11 +340,29 @@ def get_info_alojamiento(request, nombre_alojamiento):
                     "text": {
                         "text": ["Ocurrió un error al buscar la información del alojamiento."]
                     }
+                },
+                {
+                    "payload": {
+                        "richContent": [
+                            [
+                                {
+                                    "type": "chips",
+                                    "options": [
+                                        {
+                                            "text": "Volver al Menú",
+                                            "postback": "mostrar_menu"
+                                        }
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
                 }
             ]
         }
 
     return JsonResponse(response)
+
 
 @medir_tiempo
 def get_alojamiento(request):
@@ -241,7 +372,7 @@ def get_alojamiento(request):
         "fulfillmentMessages": [
             {
                 "text": {
-                    "text": ["Estos son los alojamientos disponibles:"]
+                    "text": ["Estos son los alojamientos disponibles selecciona uno:"]
                 }
             },
             {
@@ -275,7 +406,11 @@ def get_alojamiento(request):
                 }
             }
         })
-
+   
+    response["fulfillmentMessages"][1]["payload"]["richContent"][0][0]["options"].append({
+        "text": "Volver al Menú ",
+        "postback": "mostrar_menu"
+    })
     return JsonResponse(response)
 
 @medir_tiempo
@@ -320,7 +455,23 @@ def get_guias(request):
         "subtitle": "Si desea saber más sobre un guía específico, escriba 'guía' seguido del nombre del guía."
     }
     response["fulfillmentMessages"][1]["payload"]["richContent"][0].append(final_message)
-
+    response["fulfillmentMessages"].append({
+        "payload": {
+            "richContent": [
+                [
+                    {
+                        "type": "chips",
+                        "options": [
+                            {
+                                "text": "Volver al Menú",
+                                "postback": "mostrar_menu"
+                            }
+                        ]
+                    }
+                ]
+            ]
+        }
+    })
     return JsonResponse(response)
 
 @medir_tiempo
@@ -389,6 +540,274 @@ def get_info_guia(request, nombre_guia):
         }
 
     return JsonResponse(response)
+
+
+
+def capturar_mensaje_usuario(request, parameters):
+    try:
+        nombre = parameters.get('nombre')
+        correo = parameters.get('correo')
+        asunto = parameters.get('asunto')
+        mensaje = parameters.get('mensaje')
+
+        print(f"Nombre: {nombre}, Correo: {correo}, Asunto: {asunto}, Mensaje: {mensaje}")
+       
+        response_text = f"Gracias, {nombre}. Hemos recibido tu mensaje sobre \"{asunto}\". Nos pondremos en contacto contigo a través de tu correo {correo}."
+        MensajeUsuario.objects.create(
+            nombre=nombre,
+            correo=correo,
+            asunto=asunto,
+            mensaje=mensaje
+        )
+        # Agregar el botón para volver al menú
+        menu_button = {
+            "type": "chips",
+            "options": [
+                {
+                    "text": "Volver al Menú ",
+                    "postback": "mostrar_menu"
+                }
+            ]
+        }
+
+        return JsonResponse({
+            'fulfillmentMessages': [
+                {
+                    'text': {
+                        'text': [response_text]
+                    }
+                },
+                {
+                    'payload': {
+                        'richContent': [[menu_button]]
+                    }
+                }
+            ]
+        })
+    
+    except Exception as e:
+        print(f"Error al capturar mensaje del usuario: {str(e)}")
+        return JsonResponse({'fulfillmentText': 'Ocurrió un error capturando el mensaje del usuario.'})
+
+
+
+def mostrar_menu(request):
+    try:
+        response = {
+            "fulfillmentMessages": [
+                {
+                    "text": {
+                        "text": [
+                            "Selecciona una opción:"
+                        ]
+                    }
+                },
+                {
+                    "payload": {
+                        "richContent": [
+                            [
+                                {
+                                    "type": "chips",
+                                    "options": [
+                                        {
+                                            "text": "Alojamiento 🏨🛏️",
+                                            "postback": "get_alojamiento"
+                                        },
+                                        {
+                                            "text": "Guías Turísticas 🗺️🌍",
+                                            "postback": "get_guias"
+                                        },
+                                        {
+                                            "text": "Precios 🗒️🧳",
+                                            "postback": "get_precios"
+                                        },
+                                        {
+                                            "text": "Contáctanos 🆘🤔👨‍💻",
+                                            "postback": "get_contacto"
+                                        }
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        }
+        return JsonResponse(response)
+    except Exception as e:
+        print(f"Error al mostrar el menú: {str(e)}")
+        return JsonResponse({'fulfillmentText': 'Ocurrió un error mostrando el menú.'})
+
+def bienvenida(request):
+    try:
+        response = {
+            "fulfillmentMessages": [
+                {
+                    "title": "Hola ",
+                    "text": {
+                        "text": [
+                            "Hola Te damos la bienvenida a la parroquia San Andres de Chimborazo. 😊",
+                            "Selecciona una opción:"
+
+                        ]
+                    }
+                },
+                {
+                    "payload": {
+                        "richContent": [
+                            [
+                                {
+                                    "type": "chips",
+                                    "options": [
+                                        {
+                                            "text": "Alojamiento 🏨🛏️",
+                                            "postback": "get_alojamiento"
+                                        },
+                                        {
+                                            "text": "Guías Turísticas 🗺️🌍",
+                                            "postback": "get_guias"
+                                        },
+                                        {
+                                            "text": "Precios 🗒️🧳",
+                                            "postback": "get_precios"
+                                        },
+                                        {
+                                            "text": "Contáctanos 🆘🤔👨‍💻",
+                                            "postback": "get_contacto"
+                                        }
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        }
+        return JsonResponse(response)
+    except Exception as e:
+        print(f"Error al mostrar el menú: {str(e)}")
+        return JsonResponse({'fulfillmentText': 'Ocurrió un error mostrando el menú.'})
+
+
+
+def capturar_precio(request, parameters):
+    tipo_precio = parameters.get('tipo_precio')
+    
+    if tipo_precio == 'alojamiento':
+        return consultar_precios_alojamiento(request)
+    elif tipo_precio == 'rutas':
+        return consultar_precios_rutas(request)
+    else:
+        return JsonResponse({'fulfillmentText': 'Lo siento, no puedo proporcionar información sobre ese tipo de precio.'})
+
+
+
+
+def consultar_precios_alojamiento(request):
+    alojamientos_aprobados = Alojamiento.objects.filter(estado="Aprobado")
+    
+    if alojamientos_aprobados:
+        accordion_content = []
+        
+        for alojamiento in alojamientos_aprobados:
+            tipos_alojamiento = TipoAlojamiento.objects.filter(alojamiento=alojamiento)
+            precios_text = ""
+            
+            for tipo in tipos_alojamiento:
+                precios_text += f"{tipo.tipo}: ${tipo.precio:.2f}\n"
+            
+            accordion_item = {
+                "type": "accordion",
+                "title": alojamiento.nombre,
+                "subtitle": "Precios disponibles de las habitaciones",
+                "image": {
+                    "src": {
+                        "rawUrl": alojamiento.imagen.url if alojamiento.imagen else ""
+                    }
+                },
+                "text": precios_text.strip()
+            }
+            
+            accordion_content.append(accordion_item)
+        
+        # Agregar el botón para volver al menú
+        menu_button = {
+            "type": "chips",
+            "options": [
+                {
+                    "text": "Volver al Menú ",
+                    "postback": "mostrar_menu"
+                }
+            ]
+        }
+        
+        return JsonResponse({
+            'fulfillmentMessages': [
+                {
+                    'text': {
+                        'text': ['Aquí tienes los precios de nuestros alojamientos aprobados:']
+                    }
+                },
+                {
+                    'payload': {
+                        'richContent': [accordion_content, [menu_button]]
+                    }
+                }
+            ]
+        })
+    else:
+        return JsonResponse({'fulfillmentText': 'Lo siento, no tenemos información sobre alojamientos aprobados en este momento.'})
+
+
+
+
+def consultar_precios_rutas(request):
+    rutas = Ruta.objects.all()
+    
+    if rutas:
+        rich_content = [
+            {
+                'type': 'info',
+                'title': ruta.nombre,
+                'subtitle': f'Precio: ${ruta.precio}',
+                'image': {
+                    'src': {
+                        'rawUrl': ruta.imagen.url if ruta.imagen else ''
+                    }
+                }
+            } for ruta in rutas
+        ]
+        
+        # Agregar el botón para volver al menú
+        menu_button = {
+            "type": "chips",
+            "options": [
+                {
+                    "text": "Volver al Menú",
+                    "postback": "mostrar_menu"
+                }
+            ]
+        }
+        
+        return JsonResponse({
+            'fulfillmentMessages': [
+                {
+                    'text': {
+                        'text': ['Aquí tienes los precios de nuestras rutas:']
+                    }
+                },
+                {
+                    'payload': {
+                        'richContent': [rich_content, [menu_button]]
+                    }
+                }
+            ]
+        })
+        
+    else:
+        return JsonResponse({'fulfillmentText': 'Lo siento, no tenemos información sobre rutas en este momento.'})
+
+
 
 
 

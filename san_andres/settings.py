@@ -17,12 +17,15 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
+
 
 ALLOWED_HOSTS = [
     'voyaventura-san-andres.up.railway.app',
     'localhost',
     '127.0.0.1',
+    '2015-186-42-22-126.ngrok-free.app',
+    
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -41,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     # whitnoise añadido
-    # "whitenoise.runserver_nostatic",
+    "whitenoise.runserver_nostatic",
     'django.contrib.staticfiles',
     # Aplicaciones personalizadas
     'alojamiento',
@@ -61,7 +64,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # 'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -97,25 +100,24 @@ WSGI_APPLICATION = 'san_andres.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-DATABASES = {
-    "default":
-        {
-            "ENGINE": "django.db.backends.postgresql_psycopg2",
-            "NAME": env("DB_NAME"),
-            "USER": env("DB_USER"),
-            "PASSWORD": env("DB_PASSWORD"),
-            "HOST": env("DB_HOST"),
-            "PORT": env("DB_PORT")
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
-}
-
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': env("DB_NAME"),
+            'USER': env("DB_USER"),
+            'PASSWORD': env("DB_PASSWORD"),
+            'HOST': env("DB_HOST"),
+            'PORT': env("DB_PORT")
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -156,7 +158,7 @@ STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 
@@ -223,22 +225,22 @@ JAZZMIN_SETTINGS = {
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
 
-        "userauths.User": "fas fa-user",
-        "userauths.Profile":"fas fa-address-card",
+        "userauths.Usuario": "fas fa-users",
+        "userauths.MensajeUsuario":"fas fa-envelope",
 
         "alojamiento.Alojamiento": "fas fa-th",
         "alojamiento.GaleriaAlojamiento":"fas fa-calendar-week",
         "alojamiento.Reservacion":"fas fa-calendar-alt",
        
         "alojamiento.Habitacion":"fas fa-bed",
-        "alojamiento.TipoAlojamiento":"fas fa-user-cog",
+        "alojamiento.TipoAlojamiento":"fas fa-warehouse",
        
         "guias.GuiaTuristico":" fas fa-regular fa-id-card",
-        "guias.Ruta":"fas fa-map-pin",
-        "guias.ReservacionRuta":"fas fa-calendar-alt",
+        "guias.Ruta":"fas fa-map",
+        "guias.GuiaRuta":"fas  fa-mountain",
+        "guias.ReservacionGuia":"fas fa-calendar-alt",
 
-        "hotel.Coupon":"fas fa-tag",
-        "hotel.Bookmark":"fas fa-heart",
+        
     },
     
 

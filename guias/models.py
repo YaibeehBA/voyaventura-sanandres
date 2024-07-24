@@ -20,6 +20,7 @@ ESTADO_PAGO = (
 )
 
 class Ruta(models.Model):
+    
     nombre = models.CharField(max_length=150)
     descripcion = models.TextField()
     precio = models.DecimalField(max_digits=12, decimal_places=2)
@@ -44,6 +45,7 @@ class Ruta(models.Model):
     imagen_preview.short_description = 'Imagen'
 
 class GuiaTuristico(models.Model):
+    
     nombre = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
     telefono = models.CharField(
@@ -73,6 +75,8 @@ class GuiaRuta(models.Model):
     
     class Meta:
         unique_together = ('guia', 'ruta')
+        verbose_name = 'Asignar Ruta'
+        verbose_name_plural = 'Asignar Rutas'
 
     def __str__(self):
         return f"{self.guia.nombre} - {self.ruta.nombre}"
